@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{margin:0;padding:0;}
+        html,body{line-height:1.3em; font-family: 'Helvetica', 'Arial', sans-serif; background-color: #000;height:100%;width:100%;}
+        .wrap-container {position: absolute; top:0;right:0;bottom:0;left:0;margin:90px 110px 210px;display: block;overflow: hidden;}
+        .wrap-container img{margin:0 auto;}
+        .wrap-container .image-container{overflow:hidden;display: inherit}
+        .text-container {position: absolute;left:0;right:0; margin:15px 110px;display:none; z-index:999;text-align: center; max-height:105px;line-height: 35px;}
+        .text-container h1{font-weight: normal;}
+        @font-face {
+            font-family: ChineseFont;
+            src: url(http://139.199.32.181:9002/SourceHanSansCN-Normal.otf);
+        }
+    </style>
+
+</head>
+<body>
+<div class="wrap-container">
+    <div class="image-container">
+        <image class="MainImage" style="display: block;" id="MainImg1" src="http://139.199.32.181:9002/talk/img/story/s1.jpg"></image>
+    </div>
+</div>
+<div class="text-container">
+    <h1 id="storytext" style="text-align: center; color: white;">scene: the inauguration of trump</h1>
+    <h1 id="chinesestory" style="text-align: center; color: white; font-family: ChineseFont;">特朗普宣誓的场景</h1>
+    <a style="display: none;" id="" class="audio" title="Listen" href="javascript:readcaption();" h="ID=SERP,5303.2"><span id="tta_audicon"><audio id="aud1" controls="" preload="none" type="audio/mp3"> <source type="audio/mp3" src="https://cn.bing.com/ttaSpeak?IG=13376B7EBAA0471F8F9B5E878F8AD54B&amp;IID=SERP.5385&amp;language=en&amp;text=scene%3A%20the%20inauguration%20of%20trump&amp;format=audio%2Fmp3"> </audio></span><svg viewBox="0 0 18 16" width="18px" height="16px" focusable="false"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#audiosvg"></use></svg></a>
+    <a style="display: none;" id="tta_playicon" class="audio  audiofocus" title="Listen" href="javascript:void(0)" h="ID=SERP,5377.2"><span id="tta_audicon"><audio id="aud2" controls="" onplaying="" onended="" preload="none" type="audio/mp3"> <source type="audio/mp3" src="https://cn.bing.com/ttaSpeak?IG=78054BA57D05410987DC15E5A1794A4D&amp;IID=SERP.5467&amp;language=en&amp;text=Mr%20Assad%20vowed%20to%20crush%20what%20he%20called%20%22foreign-backed%20terrorism%22%0A&amp;format=audio%2Fmp3"> </audio></span><svg viewBox="0 0 18 16" width="18px" height="16px" focusable="false"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#audiosvg"></use></svg></a>
+    <a style="display: none;" id="tta_playicon" class="audio  audiofocus" title="Listen" href="javascript:void(0)" h="ID=SERP,5377.2"><span id="tta_audicon"><audio id="aud3" controls="" onplaying="" onended="" preload="none" type="audio/mp3"> <source type="audio/mp3" src="https://cn.bing.com/ttaSpeak?IG=12C319F098E54896A97EA3808FE320A0&IID=SERP.5477&language=en&text=A%20trip%20to%20Hawaii%20is%20a%20more%20popular%20travel%20goal%20than%20any%20other%20stateAustralia.%0A&format=audio%2Fmp3"> </audio></span><svg viewBox="0 0 18 16" width="18px" height="16px" focusable="false"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#audiosvg"></use></svg></a>
+</div>
+<script>
+    var bodyText = ["The smaller your reality, the more convinced you are that you know everything.", "If the facts don't fit the theory, change the facts.", "The past has no power over the present moment.", "This, too, will pass.", "</p><p>You will not be punished for your anger, you will be punished by your anger.", "Peace comes from within. Do not seek it without.", "<h3>Heading</h3><p>The most important moment of your life is now. The most important person in your life is the one you are with now, and the most important activity in your life is the one you are involved with now."]
+    function generateText(sentenceCount) {
+        for (var i = 0; i < sentenceCount; i++)
+            document.write(bodyText[Math.floor(Math.random() * 7)] + " ")
+    }
+    rep = 0;
+    function ChangeImage() {
+        document.getElementById('MainImg1').style.display = "none";
+        document.getElementById('MainImg2').style.display = "none";
+        document.getElementById('MainImg3').style.display = "none";
+
+        var img = document.getElementById('MainImg' + (rep + 1).toString());
+        img.style.display = "block";
+
+        if (rep == 0) document.getElementById('storytext').innerHTML = "scene: the inauguration of trump";
+        else if (rep == 1) document.getElementById('storytext').innerHTML = 'Mr Assad vowed to crush what he called "foreign-backed terrorism"';
+        else if (rep == 2) document.getElementById('storytext').innerHTML = 'A trip to Hawaii is a more popular travel goal than any other stateAustralia.';
+    }
+
+    function readcaption() {
+        // console.log('timing event', rep);
+        
+        //var ad = document.getElementById('aud1')
+        //ad.play();
+        // Change Image
+        document.getElementById('storytext').innerHTML = '';
+        ReadDream();
+        calWrap();
+        //window.setTimeout(readcaption, 6000);
+        
+    }
+
+    function PlaySpeech(speechpath) {
+         speechpath = speechpath.replace()
+         var audio = new Audio(speechpath);
+         audio.play();
+         return audio;
+    }
+    function ReadDream() {
+        console.log('[AJAX]Start dreaming ...')
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            console.log(this.responseText);
+            var dreamJson = JSON.parse(this.responseText);
+            // Story Text
+            var story = dreamJson.text;
+            document.getElementById('storytext').innerHTML = story;
+            // Speech
+            var speechpath = dreamJson.speechpath;
+            console.log('Speech path:' + speechpath);
+            var speech = PlaySpeech(speechpath);
+
+            // Image
+            var imagepath = 'http://139.199.32.181:9002/talk/img/story/s1.jpg'
+            if (dreamJson.imagejson.value.length > 0) {
+                imagepath = dreamJson.imagejson.value[0].thumbnailUrl;
+            }
+            document.getElementById('MainImg1').src = imagepath;
+            // Chinese
+            var chinese = dreamJson.chinese;
+            document.getElementById('chinesestory').innerHTML = chinese;
+
+            // Next Image
+            calWrap();
+            //window.setTimeout(readcaption, 6000);
+            speech.onended = function () {
+                console.log('Audio ended.')
+                window.setTimeout(readcaption, 1000);
+            }
+          }
+        };
+        xhttp.open("GET", "http://139.199.32.181:8080/talk/dream", true);
+        xhttp.send();   
+    }
+
+    function calWrap() {
+        var wrap, image_container, text_container;
+        wrap = document.getElementsByClassName('wrap-container')[0];
+        text_container = document.getElementsByClassName('text-container')[0];
+        text_container.style.display = 'block';
+        text_container.style.top = wrap.clientHeight + 90 + 'px';
+        image_container = document.getElementsByClassName('image-container')[0];
+        image_container.style.position = 'absolute';
+        image_container.style.top = '50%';
+        image_container.style.left = '50%';
+        image_container.style.marginTop = -image_container.clientHeight / 2 + 'px';
+        image_container.style.marginLeft = -image_container.clientWidth / 2 + 'px';
+    }
+
+    window.setTimeout(readcaption, 100);
+</script>
+</body>
+</html>
