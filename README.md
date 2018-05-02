@@ -16,4 +16,12 @@ E-dream Art Project
 # 3. Story Generation
 
 ## GAN
+<p align="center">
+<img width="100%" src="files/images/screen_shot.png" />
+<br>
+<b>E-Dream</b>
+<br>
+An art project.
+</p>
+
 
