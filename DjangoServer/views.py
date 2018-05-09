@@ -41,6 +41,7 @@ def news(request):
 def dream(request):
     global dreamIndex
     story = dreamList[dreamIndex]
+    story = dreamList[(dreamIndex % len(dreamList))]
     dreamIndex = (dreamIndex + 1) % len(dreamList)
     return JsonResponse(story)    
     
@@ -59,11 +60,11 @@ def reload(request):
         'Story with image': image_count})    
 
 # Client API
-def updateClient(name, value = 0):
+def updateClient(request):
     if request.method != 'GET':
         return HttpResponse('GET only')
-    if name not in request.GET:
-        return HttpResponse('Client name doesn''t exist!')
+    if 'name' not in request.GET:
+        return HttpResponse('Client name not in query')
     name = request.GET['name']
     value = 0
     if 'value' in request.GET:
@@ -81,8 +82,8 @@ def clientStatus(request):
 def removeClient(request):
     if request.method != 'GET':
         return HttpResponse('GET only')
-    if name not in request.GET:
-        return HttpResponse('Client name doesn''t exist!')
+    if 'name' not in request.GET:
+        return HttpResponse('Client name not in query')
     name = request.GET['name']
     global clientDict
     if name in clientDict:
@@ -96,13 +97,25 @@ def removeClient(request):
 def dreamClient(request):
     if request.method != 'GET':
         return HttpResponse('GET only')
-    if name not in request.GET:
-        return HttpResponse('Client name doesn''t exist!')
+    if 'name' not in request.GET:
+        return HttpResponse('Client name not in query')
     name = request.GET['name']
 
     global clientDict
-    story = dreamList[clientDict[name]]
+    story = dreamList[(clientDict[name] % len(dreamList))]
     clientDict[name] = (clientDict[name] + 1) % len(dreamList)
     return JsonResponse(story)    
+
+def newsClient(request):
+    if request.method != 'GET':
+        return HttpResponse('GET only')
+    if 'name' not in request.GET:
+        return HttpResponse('Client name not in query')
+    name = request.GET['name']
+    if name not in clientDict:
+        return HttpResponse('Client name doesn''t exist!')
+    template = loader.get_template('Archive/clientView.html')
+    context = {'name': name}
+    return HttpResponse(template.render(context, request))
     
     

@@ -12,4 +12,5 @@ urlpatterns = [
     path('clientstatus', views.clientStatus, name='clientStatus'),
     path('removeclient', views.removeClient, name='removeClient'),
     path('dreamclient', views.dreamClient, name='dreamClient'),
+    path('newsclient', views.newsClient, name='newsClient'),
 ]
