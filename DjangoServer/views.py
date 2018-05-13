@@ -3,6 +3,10 @@ from django.http import HttpResponse, JsonResponse
 from django.template import loader
 import os, sys, re, pdb, codecs, random
 import json
+import logging
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 def LoadGan():
     dreamList = []
@@ -27,11 +31,9 @@ clientDict = dict()
 
 # Create your views here.
 def index(request):
-    template = loader.get_template('talk/index.html')
-    context = {
-        'latest_question_list': ['ok', 'gpf'],
-    }
-    return HttpResponse(template.render(context, request))
+    # Load Clients
+    LoadClients()
+    return JsonResponse(clientDict)
 
 def news(request):
     template = loader.get_template('Archive/news.html')
@@ -74,6 +76,9 @@ def updateClient(request):
             return HttpResponse('Invalid value')
     global clientDict
     clientDict[name] = value
+
+    # Save to disk
+    SaveClients()
     return JsonResponse(clientDict)
 
 def clientStatus(request):
@@ -91,6 +96,8 @@ def removeClient(request):
             del clientDict[name]
         except Exception:
             pass
+        # Save to disk
+        SaveClients()
         return HttpResponse('OK')
     return HttpResponse('Name not found')
 
@@ -118,4 +125,18 @@ def newsClient(request):
     context = {'name': name}
     return HttpResponse(template.render(context, request))
     
-    
+# Save & Load Client Info
+def SaveClients():
+    with codecs.open('./edream-client-info.json', 'w', 'utf8') as fout:
+        json.dump(clientDict, fout, indent = 4, ensure_ascii = False)
+        logging.debug('Saved client info({} clients)'.format(len(clientDict)))
+
+def LoadClients():
+    jsonPath = './edream-client-info.json'
+    if os.path.exists(jsonPath) == False:
+        return None
+    global clientDict
+    with codecs.open(jsonPath, 'r', 'utf8') as fin:
+        clientDict = json.load(fin)
+        logging.debug('Loaded client info({} clients)'.format(len(clientDict)))
+
