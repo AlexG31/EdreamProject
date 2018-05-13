@@ -19,13 +19,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
 </head>
 <body style="background-color: black;">
-<div class="container" style="margin-top: 90px; margin-left:110px; margin-right:110px;margin-bottom: 35px; max-height: 780px;background-color: black; height: 780px;">
-    <!-- <div class="row">
-    <div class="col align-self-center">
-        <image class="MainImage" style="display: block; height: 100%;" id="MainImg1" src="http://139.199.32.181:9002/talk/img/story/s1.jpg"></image>
-    </div>
-    </div> -->
-    
+<div class="container" id = "ImageContainer" style="margin-top: 90px; margin-bottom: 35px; max-height: 500px;background-color: black; height: 500px;">
     <image class="MainImage" style="display: block; min-height: 100px; position: absolute;" id="MainImg1" src=""></image>
    
 </div>
@@ -111,6 +105,7 @@
           }
         };
         var serverUrl = "http://139.199.32.181:8080/talk/dreamclient?name={{ name }}";
+        //var serverUrl = "http://139.199.32.181:8080/talk/dreamclient?name=tom";
         xhttp.open("GET", serverUrl, true);
         xhttp.send();   
     }
@@ -150,14 +145,23 @@
         width = imageinfo.thumbnail.width;
 
         // Clip height
-        new_size = ClipSize(height, width, 780);
+        new_size = ClipSize(height, width, 500);
         height = new_size.height;
         width = new_size.width;
         //height = 150;
         //width = 135;
         console.log('Width, height,', width, height);
-        mleft = (1700 - width) / 2;
-        mtop = (780 - height) / 2;
+
+        /*var WindowWidth = window.innerWidth
+            || document.documentElement.clientWidth
+            || document.body.clientWidth;
+        console.log('Browser window width', WindowWidth);
+        console.log('Browser body width', document.body.clientWidth);*/
+        var WindowWidth = document.getElementById('ImageContainer').clientWidth;
+        console.log('WindowWidth:', WindowWidth);
+
+        mleft = (WindowWidth - width) / 2;
+        mtop = (500 - height) / 2;
 
         console.log(img);
         img.style.marginLeft = mleft.toString() + "px";
