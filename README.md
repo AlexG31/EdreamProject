@@ -24,4 +24,10 @@ E-dream Art Project
 An art project.
 </p>
 
+# 4. News Image Filtering
+
+## Image Classifier
+
+<img width="100%" src="files/images/labeltool.png" />
+
 

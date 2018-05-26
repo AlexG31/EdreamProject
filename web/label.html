@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edream图片标记工具</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <style>
+        *{margin:0;padding:0;}
+        html,body{line-height:1.3em; font-family: 'Helvetica', 'Arial', sans-serif; background-color: #000;height:100%;width:100%;}
+        .wrap-container {position: absolute; top:0;right:0;bottom:0;left:0;margin:40px 110px 300px;display: block;overflow: hidden;}
+        .wrap-container img{margin:0 auto;}
+        .wrap-container .image-container{overflow:hidden;display: inherit}
+        .text-container {position: absolute;left:0;right:0; margin:15px 110px;display:none; z-index:999;text-align: center; max-height:105px;line-height: 35px;}
+        .text-container h1{font-weight: normal;}
+        @font-face {
+            font-family: ChineseFont;
+            src: url(http://139.199.32.181:9002/SourceHanSansCN-Normal.otf);
+        }
+        .label-option {
+            margin:auto;
+            width: 20em;
+            display: block;
+        }
+        .center {
+            margin:auto;
+            display: block;
+            text-align: center;
+        }
+        .vgap {
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        .xvgap {
+            margin-top: 16px;
+            margin-bottom: 16px;
+        }
+        .darktext {
+            background-color: #888;
+            color: #222;
+            text-align: center;
+            width: 36em;
+        }
+        .mwidth {
+            width: 36em;
+        }
+        .inlineblock {
+            display: inline-block;
+        }
+    </style>
+
+</head>
+<body style="background-color: black;">
+<div class="container" style="max-height: 730px;background-color: black; ">
+    <nav class="navbar navbar-light bg-dark">
+        <span class="badge badge-success inlineblock">标记人ID</span>
+        <input class="inlineblock" placeholder="标记人ID" id="UserId" aria-label="Search">
+        <span class="badge badge-primary" id="LabeledCount">已标记 0 个</span>
+    </nav>
+    <image class="MainImage center vgap" style="" id="Image" src="http://139.199.32.181:9002/NewsImageTrainingData/images/{{ImageId}}"></image>
+    <div class="container xvgap"><label class="center alert alert-dark text-white-50 bg-dark mwidth" id="ImageId">{{ImageId}}</label></div>
+    <div class="container center"><button class="btn label-option btn-outline-light vgap" onclick="SendLabel('news')">这是新闻类图片</button></div>
+    <div class="container center"><button class="btn btn-outline-light label-option vgap" onclick="SendLabel('cartoon')">这是文字、漫画（其他）类图片</button></div>
+    
+</div>
+
+<script>
+    function SendLabel(label) {
+        // body...
+        var UserId = document.getElementById('UserId').value;
+        var ImageId = document.getElementById('ImageId').innerHTML;
+        if (!CheckString('ImageId', ImageId) || !CheckString('UserId', UserId)) return;
+        UserId = UserId.trim();
+        ImageId = ImageId.trim();
+
+        console.log("User id is:" + UserId);
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            
+            var resultJson = JSON.parse(this.responseText);
+            // Story Text
+            console.log(resultJson);
+            if (resultJson.status != 'success') {
+                alert('[Error]' + resultJson.status);
+                return;
+            }
+            // Get Next
+            var nextid = resultJson.nextImageId;
+            var labeledCount = resultJson.labeledCount;
+            document.getElementById('ImageId').innerHTML = nextid;
+            document.getElementById('Image').src = 'http://139.199.32.181:9002/NewsImageTrainingData/images/' + nextid;
+            document.getElementById('LabeledCount').innerHTML = '已标记 ' + labeledCount + ' 个';
+
+          }
+        }
+        var req = "userid=" + UserId + "&imageid=" + ImageId + "&label=" + label;
+        console.log("[request] " + req);
+        xhttp.open("GET", "http://139.199.32.181:8080/labelimage/label?" + req, true);
+        xhttp.send(); 
+
+    }
+    function CheckString(name, val) {
+        if (val && val.trim().length > 0) {
+            return true;
+        } else {
+            alert("Empty value of " + name);
+            return false;
+        }
+    }
+</script>
+</body>
+</html>
