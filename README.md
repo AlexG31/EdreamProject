@@ -1,11 +1,18 @@
 # EdreamProject
 E-dream Art Project
 
+Demo Video: https://vimeo.com/273002578
+
 # 1. Web Design
 
 ## Nginx(Static Content) + Django(Update Dream Story & Serve Template Page)
 
 ![alt text](http://nginx.org/nginx.png)
+
+<code>
+    sudo docker run --name dream -v /home/ubuntu/edream/nginx/nginx.conf:/etc/nginx/nginx.conf:ro -v /home/ubuntu/edream/nginx/logs:/home/ubuntu/edream/nginx/logs -v /home/ubuntu/edream/nginx/static:/home/ubuntu/edream/nginx/static:ro -p 9002:9002  -d nginx
+</code>
+
 
 # 2. Image & Translation & Speech Synthesize
 
