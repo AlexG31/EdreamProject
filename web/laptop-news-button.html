@@ -24,7 +24,7 @@
    
 </div>
 
-<div style="margin-left: auto;margin-right: auto;width:80px;margin-top:200px;">
+<div id="main-btn-div" style="margin-left: auto;margin-right: auto;width:80px;margin-top:200px;">
     <button class="btn btn-success" style="border: green 1px solid;border-width: 6px;
     width: 150px;" onclick="readcaption()" id="main-btn">
         Start Play
@@ -46,7 +46,7 @@
     function readcaption() {
         // console.log('timing event', rep);
         
-        var button = document.getElementById('main-btn');
+        var button = document.getElementById('main-btn-div');
         button.style.display = 'none';
         document.getElementById('image-container').style.display = 'block';
         document.getElementById('storytext-container').style.display = 'block';
