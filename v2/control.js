@@ -40,7 +40,8 @@ function ReadDream() {
     console.log(n)
     dreamIndex = (dreamIndex + 1) % n
 
-    var res = d3.json("image-json/" + currentLine[2] + ".json",function(err, c1){})
+    var res = d3.json("image-json/" + currentLine[2] + ".json")
+    //var res = d3.json("image-json/" + '671159b980caeb208358427f68c37e41e9dc17f2a69d09f335bf20147e637df4' + ".json")
     var voicePath = "voices/" + currentLine[2] + ".mp3"
     var r2 = res.then(function(dream){
       renderDream(currentLine[0], currentLine[1], dream, voicePath)
@@ -53,7 +54,20 @@ function ReadDream() {
 
 function renderDream(en, zh, dream, voicePath) {
   // Image
-  ImageReposition(dream.value[0]);
+
+  if (dream != null) {
+    convertUrl2LocalPath(dream.value[0], function(path) {
+      var height = dream.value[0].thumbnail.height;
+      var width = dream.value[0].thumbnail.width;
+      ImageReposition(path, width, height);
+    })
+  } else {
+    defaultImage = 'images/image-not-found.jpg'
+    var width = 450
+    var height = 450
+    ImageReposition(defaultImage, width, height);
+  }
+
   document.getElementById('MainImg1').style.height = "310px";
 
   // en
@@ -96,14 +110,13 @@ function ClipSize(height, width, max_height) {
     return {'height':height, 'width':width};
 }
 
-function ImageReposition(imageinfo) {
+function ImageReposition(imagePath, width, height) {
 
     var img = document.getElementById('MainImg1');
-    img.src = imageinfo.thumbnailUrl;
+    img.src = imagePath
+    //img.src = imageinfo.thumbnailUrl;
     //img.src = 'https://tse2.mm.bing.net/th?id=OIP.WgaQqMxxicDuNPbPKzfakgAAAA&pid=Api';
     // Image size
-    height = imageinfo.thumbnail.height;
-    width = imageinfo.thumbnail.width;
 
     // Clip height
     new_size = ClipSize(height, width, 500);
@@ -123,4 +136,26 @@ function ImageReposition(imageinfo) {
     img.style.marginLeft = mleft.toString() + "px";
     img.style.marginTop = mtop.toString() + "px";
     img.style.height = height.toString() + "px";
+}
+
+/*
+* Convert image url to local image location
+*/
+function convertUrl2LocalPath(imageinfo, action) {
+  var url = imageinfo.contentUrl
+  var thumbnailUrl = imageinfo.thumbnailUrl
+  var ext = imageinfo.encodingFormat
+
+  var imgHash = d3.json("images/image-hash.json")
+  imgHash.then(function(hashJson){
+      hashJson.forEach(function(v){
+        if (v.url == url) {
+          imgPath = 'images/' + v.hash + '.' + ext
+          console.log('local image: ' + imgPath)
+          action(imgPath)
+        }
+      })
+    }
+  )
+
 }
