@@ -1,7 +1,13 @@
 # EdreamProject
 E-dream Art Project
 
-Demo Video: https://vimeo.com/273002578
+[Demo Video](https://vimeo.com/273002578)
+
+## V3 version
+
+* use java backend
+
+-------
 
 # 1. Web Design
 
