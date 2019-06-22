@@ -1,7 +1,7 @@
 import os, sys, re, pdb
 import codecs, time
 import random
-from newspaper import Article
+from newspaper import Article, Config
 import newspaper
 from newspaper.configuration import Configuration
 from multiprocessing.dummy import Pool as ThreadPool
@@ -46,8 +46,15 @@ def collectNews(url):
 
     time.sleep(random.randint(2,10))
     newsConf = Configuration()
-    newsConf.request_timeout = 10
-    # newsConf.browser_user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36'
+    newsConf.request_timeout = 20
+    newsConf.browser_user_agent = 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:61.0) Gecko/20100101 Firefox/61.0'
+    newsConf.fetch_images = False
+    newsConf.follow_meta_refresh = True
+    newsConf.verbose = True
+
+    clog.info('newspaper config: {}'.format(newsConf))
+    clog.info('Request timeout: {}'.format(newsConf.request_timeout))
+    clog.info('Using user agent: {}'.format(newsConf.browser_user_agent))
     cnn_paper = newspaper.build(url, conf = newsConf)
     
     # progress log
@@ -65,6 +72,7 @@ def collectNews(url):
             print('Debug: base html written to {}'.format(logPath))
     
     for cnn_article in cnn_paper.articles:
+        clog.info('article url: {}'.format(cnn_article.url))
         outPath = os.path.join(OutputFolder,
                 '{}/{}.txt'.format(GetTimestampDirName(),
                     url2Filename(cnn_article.url)))
