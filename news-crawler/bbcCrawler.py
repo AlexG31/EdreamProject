@@ -6,6 +6,7 @@ import newspaper
 from newspaper.configuration import Configuration
 from multiprocessing.dummy import Pool as ThreadPool
 import wget
+import logging
 
 debug = False
 OutputFolder = None
@@ -41,13 +42,19 @@ def ReloadSource(cnn_paper, url):
 
     
 def collectNews(url):
+    clog = logging.getLogger('crawler')
 
     time.sleep(random.randint(2,10))
     newsConf = Configuration()
     newsConf.request_timeout = 10
     # newsConf.browser_user_agent = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.162 Safari/537.36'
     cnn_paper = newspaper.build(url, conf = newsConf)
-    print('Collecting news from {}, [{}] articles.'.format(url, len(cnn_paper.articles)))
+    
+    # progress log
+    log_info = 'Collecting news from {}, [{}] articles.'.format(url, len(cnn_paper.articles))
+    print(log_info)
+    clog.info(log_info)
+
     # if len(cnn_paper.articles) == 0:
         # cnn_paper = ReloadSource(cnn_paper, url)
     if debug and len(cnn_paper.articles) == 0:
@@ -84,12 +91,11 @@ def collectNews(url):
 g_TimestampFolderName = None
 def GetTimestampDirName():
     return g_TimestampFolderName
-    # return time.strftime('%Y%m%d') + '_{}'.format(int(time.time()))
 
 def GetDate():
     return time.strftime('%Y%m%d')
     
-def CrawUrlList(InPath, ThreadPoolSize, OutputFolder):
+def CrawUrlList(InPath, ThreadPoolSize):
     pool = ThreadPool(ThreadPoolSize)
     urls = list()
     with codecs.open(InPath, 'r', 'utf8') as fin:
@@ -103,22 +109,22 @@ def CrawUrlList(InPath, ThreadPoolSize, OutputFolder):
             
 
 if __name__ == '__main__':
-    # parse()
-    # collectCnnNews()
-    # collectNews(sys.argv[1])
     
     OutputFolder = sys.argv[2]
     if os.path.exists(OutputFolder) == None:
         raise Exception('OutputFolder not exist!')
-    RawHtmlFolder = sys.argv[3]
-    if os.path.exists(RawHtmlFolder) == None:
-        raise Exception('RawHtmlFolder not exist!')
-    g_TimestampFolderName = time.strftime('%Y%m%d') + '_{}'.format(int(time.time()))
+
+    g_TimestampFolderName = time.strftime('%Y%m%d_%H-%M-%S')
     timestampFolder = os.path.join(OutputFolder, GetTimestampDirName())
     if os.path.exists(timestampFolder) == False:
         os.mkdir(timestampFolder)
 
-    ThreadPoolSize = 5
+    # crawler logger
+    logging.basicConfig(
+        filename = os.path.join(timestampFolder, 'crawler.log'),
+        level = 'INFO')
+
+    ThreadPoolSize = 1
     if len(sys.argv) > 4:
         ThreadPoolSize = int(sys.argv[4])
-    CrawUrlList(sys.argv[1], ThreadPoolSize, OutputFolder)
+    CrawUrlList(sys.argv[1], ThreadPoolSize)
