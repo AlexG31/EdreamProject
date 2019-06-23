@@ -18,20 +18,30 @@ hrefs.forEach(a => {
 
 (async () => {
   const browser = await puppeteer.launch();
+  console.log('User agent:')
+  var userAgentValue = await browser.userAgent();
+  console.log(userAgentValue);
+
   const page = await browser.newPage();
+  await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36')
+
   var target_url = 'http://www.chinadaily.com.cn/world/america'
-  await page.goto(target_url);
+  await page.goto(target_url, {waitUntil: 'load', timeout: 0});
 
   // Get the "viewport" of the page, as reported by the page.
-  const feeds = await page.evaluate(() => {
+  const feeds = await page.evaluate(target_url => {
+    console.log('target_url = ', target_url);
+
     var targetAttr = document.createElement('a');
     targetAttr.href = target_url;
     var targetHost = targetAttr.hostname.toString();
 
+    console.log('target host = ', targetHost);
+
     var hrefs = document.getElementsByTagName('a');
     var links = Array();
-    var curUrl = hrefs[i].href;
     for(var i = 0; i < hrefs.length; i++) {
+      var curUrl = hrefs[i].href;
       var curHost = hrefs[i].hostname.toString();
       if (curHost != targetHost) continue;
 
@@ -40,8 +50,10 @@ hrefs.forEach(a => {
       var pageUrlName = curUrl.substr(slashIndex + 1);
       var matchResult = pageUrlName.match(/[\#\?]+/);
       if (matchResult) continue;
+      // match year in url
+      if (!curUrl.match(/([\d]{4})/)) continue;
 
-      links.push(hrefs[i].href);
+      links.push(curUrl);
     }
     /*console.log('href length:', hrefs.length);
     for(var i = 0; i < hrefs.length; i++) {
@@ -50,13 +62,13 @@ hrefs.forEach(a => {
     return {
       links: links
     };
-  });
+  }, target_url);
 
   var links = feeds['links'];
   console.log(util.format('Crawled total %d links.', links.length))
 
-  var linkStart = 20;
-  var linkEnd = 30;
+  var linkStart = 0;
+  var linkEnd = links.length;
 
   for(var i = linkStart; i < linkEnd; i++) {
     var curUrl = links[i];
@@ -64,7 +76,7 @@ hrefs.forEach(a => {
 
     // Browse sub page of current website
     try{
-      var res = await page.goto(curUrl);
+      var res = await page.goto(curUrl, {waitUntil: 'load', timeout: 60000});
       console.log(res)
     }
     catch (err) {
@@ -73,27 +85,32 @@ hrefs.forEach(a => {
     }
 
     // Get the "viewport" of the page, as reported by the page.
-    const newsContent = await page.evaluate(() => {
-      var passages = document.getElementsByTagName('p');
-      var content = Array();
-      for (var j = 0; j < passages.length; j++) {
-        content.push(passages[j].innerText);
-      }
-      
-      return {
-        'content': content.join('\n')
-      };
-    });
-
-    var htmlContent = newsContent['content'];
-    var fileName = util.format('./work/news/%d.html', i); 
-    fs.writeFile(fileName, htmlContent, function(err) {
-        if(err) {
-          return console.log(err);
+    try {
+      const newsContent = await page.evaluate(() => {
+        var passages = document.getElementsByTagName('p');
+        var content = Array();
+        for (var j = 0; j < passages.length; j++) {
+          content.push(passages[j].innerText);
         }
+        
+        return {
+          'content': content.join('\n')
+        };
+      });
 
-        console.log(util.format("The file %s was saved!", fileName));
-    }); 
+      var htmlContent = newsContent['content'];
+      var fileName = util.format('./work/news/%d.html', i); 
+      fs.writeFile(fileName, htmlContent, function(err) {
+          if(err) {
+            return console.log(err);
+          }
+
+          console.log(util.format("The file %s was saved!", fileName));
+      }); 
+    } catch(err) {
+      console.log(err)
+      continue;
+    }
     
   }
   
