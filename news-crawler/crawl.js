@@ -9,10 +9,9 @@ exports.hello = function (name) {
   return 100;
 }
 
-exports.crawl = function (targetUrl, saveFolder) {
+exports.crawl = async function (targetUrl, saveFolder) {
   if (!fs.existsSync(saveFolder)) throw new Exception('save folder does not exist: ' + saveFolder);
 
-(async () => {
   const browser = await puppeteer.launch();
   console.log('User agent:');
   var userAgentValue = await browser.userAgent();
@@ -67,8 +66,7 @@ exports.crawl = function (targetUrl, saveFolder) {
 
     // Browse sub page of current website
     try{
-      var res = await page.goto(curUrl, {waitUntil: 'load', timeout: 60000});
-      console.log(res)
+      await page.goto(curUrl, {waitUntil: 'load', timeout: 60000});
     }
     catch (err) {
       console.log("sub page crawling error:", err)
@@ -91,10 +89,10 @@ exports.crawl = function (targetUrl, saveFolder) {
 
       // Write curUrl to first line of the file
       var htmlContent = curUrl + '\n' + newsContent['content'];
-      const hash = crypto.createHash(hashMethod);
+      var hash = crypto.createHash(hashMethod);
       hash.update(curUrl);
       var hashFileName = hash.digest('hex').toString();
-      var saveHtmlPath = util.format('%s/%d.html', saveFolder, hashFileName);
+      var saveHtmlPath = util.format('%s/%s.html', saveFolder, hashFileName);
       console.log('Save html content to ', saveHtmlPath);
       var fileName = saveHtmlPath; 
       fs.writeFile(fileName, htmlContent, function(err) {
@@ -112,6 +110,5 @@ exports.crawl = function (targetUrl, saveFolder) {
   }
   
   await browser.close();
-})();
 
 }

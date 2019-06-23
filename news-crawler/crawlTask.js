@@ -10,7 +10,11 @@ var fc = fs.readFileSync(inFile)
 
 var lines = fc.toString().split('\n');
 var hashDict = new Set();
-lines.slice(0,4).forEach(l => {
+
+(async ()=> {
+
+for (var i = 5; i < 7; i++) {
+  var l = lines[i];
   // Create url hash
   const hash = crypto.createHash(hashMethod);
   console.log(l);
@@ -29,10 +33,16 @@ lines.slice(0,4).forEach(l => {
 
     // Make dir
     if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath);
+      fs.mkdirSync(folderPath, {recursive: true});
+    }
 
-      // Start crawl
-      crawl.crawl(l, folderPath)
+    // Start crawling
+    try {
+      await crawl.crawl(l, folderPath);
+    } catch (err) {
+      console.log(err);
     }
   }
-});
+};
+
+})();
