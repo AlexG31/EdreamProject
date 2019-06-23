@@ -18,7 +18,7 @@ var hashDict = new Set();
 
 (async ()=> {
 
-for (var i = 5; i < 7; i++) {
+for (var i = 0; i < lines.length; i++) {
   var l = lines[i];
   // Create url hash
   const hash = crypto.createHash(hashMethod);
