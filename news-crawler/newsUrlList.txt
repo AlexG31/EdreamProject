@@ -60,7 +60,6 @@ https://www.usatoday.com/
 https://www.usnews.com/
 https://www.usnews.com/news
 http://www.foxnews.com/entertainment.html
-http://www.bbc.com/news/world/europe
 http://www.bbc.com/news/world
 http://www.bbc.com/news/world/asia
 http://www.bbc.com/news/stories
