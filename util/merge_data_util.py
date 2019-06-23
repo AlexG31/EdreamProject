@@ -46,11 +46,13 @@ def merge_news(in_folder, out_path):
 
 if __name__ == '__main__':
   # crawler logger
-  logging.basicConfig(
-      filename = os.path.join('./', 'merge.log'),
-      level = 'INFO')
-  base_folder = '/media/alexg/vol1/data/news/2019-06-23/'
-  out_file = './out.html'
+  #logging.basicConfig(
+  #    filename = os.path.join('./', 'merge.log'),
+  #    level = 'INFO')
+  #base_folder = '/media/alexg/vol1/data/news/2019-06-23/'
+  #out_file = './out.html'
+  in_folder = sys.argv[1]
+  out_file = sys.argv[2]
   merge_news(base_folder, out_file)
 
   print('done')
