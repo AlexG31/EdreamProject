@@ -1,0 +1,2 @@
+5 0 * * * echo "trigger by cron at [`date`]" >> /home/alexg/spider/cron-trigger.log
+6 0 * * * bash /home/alexg/spider/run_chrome_crawler.sh
