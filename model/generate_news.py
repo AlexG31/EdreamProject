@@ -12,7 +12,7 @@ if arg_length > 2:
     with open(prev_file, 'r') as fin:
         for line in fin:
             content = line.strip(' \r\n')
-            content_words = content.split(' ')
+            content_words = len(content.split(' '))
             if content_words >= 5 and content_words < 15:
                 input_prefix = content
 print('Input prefix: ', input_prefix)
