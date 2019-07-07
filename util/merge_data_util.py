@@ -53,6 +53,6 @@ if __name__ == '__main__':
   #out_file = './out.html'
   in_folder = sys.argv[1]
   out_file = sys.argv[2]
-  merge_news(base_folder, out_file)
+  merge_news(in_folder, out_file)
 
   print('done')
