@@ -6,6 +6,77 @@ import logging
 copyright_pattern = re.compile(r'^[\s]*copyright')
 space_pattern = re.compile(r'[\s]+')
 
+illegalChars = [u'é', u'ú', u'ç', u'ã', u'ó', ]
+def judgeIllegalCharacter(line):
+  for c in illegalChars:
+    if line.find(c) != -1:
+      return False
+  return True
+
+n_cur = 0
+def judgeScriptLength(line, min_len = 5, max_len = 20000):
+  global n_cur
+  N = len(line.split(' '))
+  if N > n_cur:
+    n_cur = N
+  return N > min_len and N <= max_len
+
+endingPattern = re.compile(r'[^a-z0-9A-Z]$')
+def judgeEnding(line):
+    return endingPattern.search(line) != None
+
+repeatMem = set()
+def filterTrainingData(lines):
+  global repeatMem
+  result = list()
+  for line in lines:
+    if line not in repeatMem and judgeEnding(line) and judgeScriptLength(line) and judgeIllegalCharacter(line):
+      result.append(line)
+      repeatMem.add(line)
+  return result
+
+def splitLine(line):
+    quotes = [
+        u'""',
+        u'“”'
+    ]
+    stops = set([
+        '.',
+        ',',
+        '，',
+        '。',
+        '!',
+        '?',
+        ';'
+        ])
+    results = []
+    cur = ''
+    prev_quote = None
+    for c in line:
+        ch = c
+        if prev_quote is not None:
+            if c == quotes[prev_quote][1] and judgeScriptLength(cur):
+                cur += c
+                results.append(cur)
+                cur = ''
+                prev_quote = None
+                ch = ''
+        else:
+            if c in stops and judgeScriptLength(cur):
+                cur += c 
+                results.append(cur)
+                cur = ''
+                ch = ''
+            
+        cur += ch
+        for ind in range(len(quotes)):
+            if quotes[ind][0] == ch:
+                prev_quote = ind
+                break
+    if judgeScriptLength(cur):
+        results.append(cur)
+    return results
+
 def read_news(in_path):
   clog = logging.getLogger('data.merger')
   contents = []
@@ -40,6 +111,7 @@ def merge_news(in_folder, out_path):
 
   for p in raw_htmls:
     contents = read_news(p)
+    contents = filterTrainingData(contents)
     fout.writelines([x + '\n' for x in contents])
   
   fout.close()
@@ -54,5 +126,6 @@ if __name__ == '__main__':
   in_folder = sys.argv[1]
   out_file = sys.argv[2]
   merge_news(in_folder, out_file)
+  print('max words per line:', n_cur)
 
   print('done')
