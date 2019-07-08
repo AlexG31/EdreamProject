@@ -145,7 +145,7 @@ def randomStory(sess, prefix, turn = 100, length = 1023):
 if __name__ == '__main__':
     sess = gpt2.start_tf_sess()
     gpt2.load_gpt2(sess)
-    story = randomStory(sess, input_prefix, turn=3)
+    story = randomStory(sess, input_prefix, turn=3, length = 150)
     with open(output_file, 'w', encoding='utf8') as fout:
         for line in story:
             fout.write(line)
