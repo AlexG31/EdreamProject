@@ -1,7 +1,7 @@
 #encoding:utf8
 
 # Imports the Google Cloud client library
-from translateAPI import TranslateChinese
+from translateAPI import translateV3
 import re
 import json
 import sys
@@ -47,9 +47,9 @@ if __name__ == '__main__':
     results = []
     for line in lines:
         line = line.decode('utf8')
-        tr = TranslateChinese(line)
+        tr = translateV3(line)
         print(tr)
         #tr = u"[{}]".format(line.decode('utf8'))
-        results.append([line, tr.decode('utf8'), sha(line)])
+        results.append([line, tr, sha(line)])
 
     generateScriptJson(results, out_path)
