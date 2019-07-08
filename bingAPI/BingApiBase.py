@@ -10,7 +10,7 @@ class BingApiBase():
     def __init__(self, 
             tokenOutputPath = './bingapi.token.tmp',
             tokenEndpoint = 'https://eastasia.api.cognitive.microsoft.com/sts/v1.0/issueToken',
-            private_key = 'dea851035232423ca91e1c07323174c8',
+            private_key = '',
             service_url = 'https://eastasia.tts.speech.microsoft.com/cognitiveservices/v1'):
         self.service_url = service_url
         self.private_key = private_key
