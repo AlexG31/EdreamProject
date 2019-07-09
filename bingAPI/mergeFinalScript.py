@@ -55,7 +55,8 @@ def randomReplaceJackRose(line, replace_proba = 0.3):
                 replace_count += 1
 
     if replace_count > 0:
-        print(u'{} -> {}'.format(line, src))
+        print(line.decode('utf8'), end=' -> ')
+        print(src.decode('utf8'))
     return src
 
 if __name__ == '__main__':

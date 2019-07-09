@@ -48,7 +48,7 @@ if __name__ == '__main__':
     for line in lines:
         line = line.decode('utf8')
         tr = translateV3(line)
-        print(tr)
+        print(tr.decode('utf8'))
         #tr = u"[{}]".format(line.decode('utf8'))
         results.append([line, tr, sha(line)])
 
