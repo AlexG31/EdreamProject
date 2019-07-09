@@ -33,7 +33,7 @@ def batchImage(lines, save_folder, private_key, stop_words):
         with codecs.open(output_path, 'w', 'utf8') as fout:
             json.dump(content, fout, indent = 4, ensure_ascii = False)
         
-        time.sleep(0.5)
+        time.sleep(5.5)
     print('Error count: {}'.format(empty_count))
  
 def getPrivateKey():
