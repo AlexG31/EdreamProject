@@ -5,7 +5,6 @@ import requests
 import time
 import shutil, hashlib
 import json
-import progressbar
 
 
 result_pat = re.compile(r'<[^>]+>(.*)</string>')
