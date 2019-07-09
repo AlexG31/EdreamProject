@@ -1,5 +1,5 @@
 #encoding:utf8
-import os, sys, re, pdb, codecs
+import os, sys, re, pdb, codecs, random
 import pickle
 import codecs
 import requests
@@ -55,23 +55,42 @@ class BingImageSearcher(BingApiBase):
     def searchByRule(self, en, zh):
         words = self.stripZh(zh)
         # Search zh
-        res = self.search(' '.join(words))
+        zh_terms = ' '.join(words[:7])
+        print('zh search terms:', zh_terms)
+        res = self.search(zh_terms)
         assert res
         if len(res['value']) > 0:
             return res
         # Search en
-        res = self.search(en)
+        en_terms = self.stripEn(en)
+        print('en search terms:', en_terms)
+        res = self.search(en_terms)
         assert res
         if len(res['value']) > 0:
             return res
 
         # Search 3 words zh
-        res = self.search(' '.join(words[:3]))
+        zh_terms = ' '.join(random.sample(words, 3))
+        print('zh search terms:', zh_terms)
+        res = self.search(zh_terms)
         assert res
         if len(res['value']) > 0:
             return res
-        return None
+        else:
+            print('no search response:', res)
+            return None
         
+
+    def stripEn(self, text):
+        terms = []
+        pat = re.compile(r'[^a-zA-Z]')
+        for w in text.split(' '):
+            if w.lower() in self.stopwords:
+                continue
+            if pat.search(w) is not None or len(w) <= 0:
+                continue
+            terms.append(w.lower())
+        return ' '.join(terms)
 
     def stripZh(self, text):
         stopwords = self.stopwords
