@@ -70,7 +70,10 @@ class BingImageSearcher(BingApiBase):
             return res
 
         # Search 3 words zh
-        zh_terms = ' '.join(random.sample(words, 3))
+        sample_words = words
+        if words is not None and len(words) > 3:
+            sample_words = random.sample(words, 3)
+        zh_terms = ' '.join(sample_words)
         print('zh search terms:', zh_terms)
         res = self.search(zh_terms)
         assert res
