@@ -19,7 +19,7 @@ def batchTts(lines, save_folder, private_key):
 
         # Format output path
         name = en_hash
-        output_path = save_folder + name + '.mp3'
+        output_path = os.path.join(save_folder, name + '.mp3')
         if os.path.exists(output_path):
             continue
         #print(output_path)

@@ -60,7 +60,7 @@ class Text2SpeechConverter():
         # Add language parameters
         url = url + '?language={}'.format(language)
 
-        requestData = "<speak version='1.0' xml:lang='{0}'><voice xml:lang='{0}' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice ({0}, {2})'>{1}</voice></speak>".format(language,text, speaker)
+        requestData = u"<speak version='1.0' xml:lang='{0}'><voice xml:lang='{0}' xml:gender='Female' name='Microsoft Server Speech Text to Speech Voice ({0}, {2})'>{1}</voice></speak>".format(language,text, speaker)
         #print('request data:', requestData)
 
         headers = {'User-Agent': 'edream',
@@ -69,7 +69,7 @@ class Text2SpeechConverter():
                 'Authorization': 'Bearer {}'.format(token)}
 
         #print('url = ' + url)
-        content = requests.post(url, headers = headers, data = requestData)
+        content = requests.post(url, headers = headers, data = requestData.encode('utf8'))
 
         if content.status_code != 200:
             print('Error code:', content.status_code)
