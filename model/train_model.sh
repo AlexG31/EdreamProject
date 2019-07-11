@@ -4,18 +4,19 @@ modelHome="/home/alexg/model"
 cd $modelHome
 source cpu/bin/activate
 
-cat edream.lock && rm edream.lock && \
-python3 helloworld.py
+echo "=====Let's Collect News!====="
+trainingFile="/home/alexg/model/training-news.txt"
+spiderWorkFolder="/home/alexg/spider/work/"
+python3 /home/alexg/github/EdreamProject/util/merge_data_util.py \
+$spiderWorkFolder \
+$trainingFile
 
-echo 'generate story ...'
-dateFileName="`date -I`_`date +%H`"
-generateStoryFile="./generate/$dateFileName.txt"
-exportStoryFile="./generate/story.txt"
-python3 /home/alexg/github/EdreamProject/model/generate_news.py \
-$generateStoryFile \
-$exportStoryFile
-
-cp $generateStoryFile $exportStoryFile
-
-touch edream.lock
+# Train GPT-2 Model
+if mkdir ./gpt-2.lock; then
+    python3 helloworld.py
+    rm -rf ./gpt-2.lock
+else
+    echo 'gpt-2 is running'
+    exit 1
+fi
 
