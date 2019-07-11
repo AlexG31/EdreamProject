@@ -11,7 +11,7 @@ def load_credentials(path):
   assert('port' in enc)
   return enc
   
-def dummy_send_email(credential_path, content_html, subject = 'info'):
+def dummy_send_email(credential_path, content, subject = 'info', mime_type = "html"):
   credentials = load_credentials(credential_path)
   f = credentials['email']
   t = credentials['email']
@@ -19,9 +19,15 @@ def dummy_send_email(credential_path, content_html, subject = 'info'):
   host = credentials['host']
   port = credentials['port']
 
-  send_email(f, t, subject, content_html, p, host, port)
+  mime_content = MIMEText(content, mime_type)
+  send_email(f, t, subject, p, host, port, mime_content)
 
-def send_email(from_addr, to_addr, subject, content_html, password, host, port):
+def send_email(from_addr, 
+  to_addr, 
+  subject, 
+  password, host, port, 
+  mime_content):
+
   credentials = load_credentials('/Users/AlexG/github/EdreamProject/util/email.json')
   print(credentials)
   sender_email = from_addr
@@ -33,7 +39,7 @@ def send_email(from_addr, to_addr, subject, content_html, password, host, port):
   message["To"] = receiver_email
 
   # Turn these into plain/html MIMEText objects
-  part1 = MIMEText(content_html, "html")
+  part1 = mime_content
 
   # Add HTML/plain-text parts to MIMEMultipart message
   # The email client will try to render the last part first
