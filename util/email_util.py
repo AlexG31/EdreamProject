@@ -28,8 +28,6 @@ def send_email(from_addr,
   password, host, port, 
   mime_content):
 
-  credentials = load_credentials('/Users/AlexG/github/EdreamProject/util/email.json')
-  print(credentials)
   sender_email = from_addr
   receiver_email = to_addr
 
