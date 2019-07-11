@@ -44,7 +44,7 @@ replaceMap = [
     (re.compile(r"\b[Hh]e\b"), "Jack"),
     (re.compile(r"\b[Hh]im\b"), "Jack"),
 ]
-def randomReplaceJackRose(line, replace_proba = 0.3):
+def randomReplaceJackRose(line, replace_proba = 0.8):
     replace_count = 0
     src = line
     for pat, token in replaceMap:
