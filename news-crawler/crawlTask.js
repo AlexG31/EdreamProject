@@ -28,7 +28,7 @@ for (var i = 0; i < lines.length; i++) {
   console.log(h);
 
   if (hashDict.has(h)) {
-    console.log("url already exists: ", l);
+    console.log("url already exists, skipping:", l);
   } else {
     hashDict.add(h);
     var datetime = new Date();
@@ -44,7 +44,8 @@ for (var i = 0; i < lines.length; i++) {
     try {
       await crawl.crawl(l, folderPath);
     } catch (err) {
-      console.log(err);
+      console.log('news crawler failed with: ', err);
+      process.exit(1)
     }
   }
 };

@@ -24,7 +24,8 @@ exports.crawl = async function (targetUrl, saveFolder) {
     await page.goto(targetUrl, {waitUntil: 'load', timeout: 100000});
   } catch (err) {
     console.log('target url:', targetUrl)
-    console.log('goto has error:', err)
+    console.log('pupeteer goto failed')
+    return 1;
   }
   // Get the "viewport" of the page, as reported by the page.
   const feeds = await page.evaluate(targetUrl => {
@@ -114,5 +115,5 @@ exports.crawl = async function (targetUrl, saveFolder) {
   }
   
   await browser.close();
-
+  return 0;
 }

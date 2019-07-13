@@ -15,6 +15,7 @@ if mkdir ./gpt-2.lock; then
     $generateStoryFile \
     $exportStoryFile
 
+    deactivate
     cp $generateStoryFile $exportStoryFile && \
     sh /home/alexg/github/EdreamProject/bingAPI/run_api.sh &> \
     "/home/alexg/model/logs/bing-api-$dateFileName.log" && \
