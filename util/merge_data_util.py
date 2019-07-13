@@ -1,3 +1,4 @@
+#encoding:utf8
 import glob, sys, os
 import re
 import pdb
@@ -80,7 +81,7 @@ def splitLine(line):
 def read_news(in_path):
   clog = logging.getLogger('data.merger')
   contents = []
-  with open(in_path) as fin:
+  with open(in_path, 'r', encoding='utf8') as fin:
     fin.readline()
     for line in fin:
       line = space_pattern.sub(' ', line).strip(' \r\n')
@@ -107,7 +108,7 @@ def merge_news(in_folder, out_path):
   clog = logging.getLogger('data.merger')
   raw_htmls = glob.glob(os.path.join(in_folder, '**', '*.html'), recursive=True)
   clog.info('Total number of raw htmls: {}'.format(len(raw_htmls)))
-  fout = open(out_path, 'w')
+  fout = open(out_path, 'w', encoding='utf8')
 
   for p in raw_htmls:
     contents = read_news(p)
