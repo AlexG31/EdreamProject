@@ -20,8 +20,12 @@ exports.crawl = async function (targetUrl, saveFolder) {
   const page = await browser.newPage();
   await page.setUserAgent('Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36')
 
-  await page.goto(targetUrl, {waitUntil: 'load', timeout: 300000});
-
+  try {
+    await page.goto(targetUrl, {waitUntil: 'load', timeout: 100000});
+  } catch (err) {
+    console.log('target url:', targetUrl)
+    console.log('goto has error:', err)
+  }
   // Get the "viewport" of the page, as reported by the page.
   const feeds = await page.evaluate(targetUrl => {
     console.log('target url = ', targetUrl);

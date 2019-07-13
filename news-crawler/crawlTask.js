@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer');
 const fs = require('fs');
 const util = require('util');
 const crawl = require('./crawl')
