@@ -1,22 +1,14 @@
 import gpt_2_simple as gpt2
 import tensorflow as tf
 from tensorflow.core.protobuf import rewriter_config_pb2
-import os, sys, re
+import os, sys, re, json
+import argparse
+current_file_path = os.path.abspath(__file__)
+print('current file path:', current_file_path)
+sys.path.append(os.path.join(os.path.dirname(current_file_path), '..', 'util'))
+from util.checkSentenceDuplicate import SentenceDuplicateDetector
+
 model_name = "117M"
-arg_length = len(sys.argv)
-output_file = sys.argv[1]
-input_prefix = 'She looks at the president,'
-if arg_length > 2:
-    prev_file = sys.argv[2]
-    print('reading previous lines from', prev_file)
-    with open(prev_file, 'r') as fin:
-        for line in fin:
-            content = line.strip(' \r\n')
-            content_words = len(content.split(' '))
-            if content_words >= 5 and content_words < 15:
-                input_prefix = content
-print('Input prefix: ', input_prefix)
-print('output file: {}'.format(output_file))
 print('Using cached model 117M')
 
 def judgeScriptLength(line, min_len = 5):
@@ -142,10 +134,55 @@ def randomStory(sess, prefix, turn = 100, length = 1023):
 
     return story
 
+def parseInputPrefix(prev_file):
+    print('reading previous lines from', prev_file)
+    input_prefix = None
+    with open(prev_file, 'r', encoding='utf8') as fin:
+        for line in fin:
+            content = line.strip(' \r\n')
+            content_words = len(content.split(' '))
+            if content_words >= 5 and content_words < 15:
+                input_prefix = content
+    return input_prefix
+
+def prepareDetector(dream_json_path):
+    with open(dream_json_path, 'r', encoding='utf8') as fin:
+        data = json.load(fin)
+    detector = SentenceDuplicateDetector()
+    for en, zh, h in data:
+        detector.ingest(en)
+    return detector
+
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-output_file', nargs=1, help='output file')
+    parser.add_argument('-dream_json_path', nargs=1, help='path to current dream.json, which contains all the generated lines')
+    parser.add_argument('-previous_story_file', nargs=1, help='previous file to search for story prefix')
+    parser.add_argument('-min_story_lines', nargs=1, type=int, default=10, help='previous file to search for story prefix')
+    parser.add_argument('-max_story_lines', nargs=1, type=int, default=80, help='previous file to search for story prefix')
+    args = vars(parser.parse_args())
+    print('args:', args)
+    output_file = args['output_file'][0]
+    min_story_lines = args['min_story_lines']
+    max_story_lines = args['max_story_lines']
+
+    print('output file: {}'.format(output_file))
+    input_prefix = 'She looks at the president,'
+    if args['previous_story_file'] is not None:
+        input_prefix = parseInputPrefix(args['previous_story_file'][0])
+    print('Input prefix: ', input_prefix)
+    
+    detector = prepareDetector(args['dream_json_path'][0])
     sess = gpt2.start_tf_sess()
     gpt2.load_gpt2(sess)
-    story = randomStory(sess, input_prefix, turn=3, length = 150)
+    story = []
+    while len(story) < min_story_lines:
+        for line in randomStory(sess, input_prefix, turn=3, length = 150):
+            if detector.isDuplicateBrute(line):
+                continue
+            else:
+                detector.ingest(line)
+                story.append(line)
     with open(output_file, 'w', encoding='utf8') as fout:
         for line in story:
             fout.write(line)
