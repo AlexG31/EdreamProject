@@ -1,6 +1,7 @@
 #!/bin/bash -x
 echo '======== GPT-2 Model =========='
 modelHome="/home/alexg/model"
+dreamJsonPath="/home/alexg/EdreamProject/v2/target/lines/clean-lines.json"
 cd $modelHome
 source cpu/bin/activate
 
@@ -11,9 +12,10 @@ generateStoryFile="./generate/$dateFileName.txt"
 exportStoryFile="./generate/story.txt"
 
 if mkdir ./gpt-2.lock; then
-    python3 /home/alexg/github/EdreamProject/model/generate_news.py \
-    $generateStoryFile \
-    $exportStoryFile
+    python3 /github/EdreamProject/model/generate_news.py \
+    -output_file $generateStoryFile \
+    -dream_json_path $dreamJsonPath \
+    -previous_story_file $exportStoryFile
 
     deactivate
     cp $generateStoryFile $exportStoryFile && \

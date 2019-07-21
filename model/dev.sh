@@ -2,10 +2,10 @@
 echo '======== GPT-2 Model =========='
 
 if mkdir ./gpt-2.lock; then
-    python3 /home/alexg/github/EdreamProject/model/generate_news.py \
+    python3 /github/EdreamProject/model/generate_news.py \
     -output_file ./data/out.txt \
     -dream_json_path ./data/dream.json \
-    #-previous_story_file ./data/story.txt
+    -previous_story_file ./data/story.txt
 
     deactivate
     rm -rf ./gpt-2.lock

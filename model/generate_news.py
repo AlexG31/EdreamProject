@@ -1,12 +1,14 @@
 import gpt_2_simple as gpt2
 import tensorflow as tf
 from tensorflow.core.protobuf import rewriter_config_pb2
-import os, sys, re, json
+import os, sys, re, json, random
 import argparse
+import pdb
+import codecs
 current_file_path = os.path.abspath(__file__)
 print('current file path:', current_file_path)
 sys.path.append(os.path.join(os.path.dirname(current_file_path), '..', 'util'))
-from util.checkSentenceDuplicate import SentenceDuplicateDetector
+from checkSentenceDuplicate import SentenceDuplicateDetector
 
 model_name = "117M"
 print('Using cached model 117M')
@@ -17,6 +19,16 @@ def judgeScriptLength(line, min_len = 5):
 endingPattern = re.compile(r'[^a-z0-9A-Z]$')
 def judgeEnding(line):
     return endingPattern.search(line) != None
+
+def removeEmptyLines(lines):
+    res = []
+    for l in lines:
+        l = l.strip(' \r\n')
+        l = l.replace('\r', ' ')
+        l = l.replace('\n', ' ')
+        if len(l) > 0 and judgeEnding(l) and judgeScriptLength(l):
+            res.append(l)
+    return res
 
 def splitLine(line):
     quotes = [
@@ -153,18 +165,40 @@ def prepareDetector(dream_json_path):
         detector.ingest(en)
     return detector
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-output_file', nargs=1, help='output file')
-    parser.add_argument('-dream_json_path', nargs=1, help='path to current dream.json, which contains all the generated lines')
-    parser.add_argument('-previous_story_file', nargs=1, help='previous file to search for story prefix')
-    parser.add_argument('-min_story_lines', nargs=1, type=int, default=10, help='previous file to search for story prefix')
-    parser.add_argument('-max_story_lines', nargs=1, type=int, default=80, help='previous file to search for story prefix')
-    args = vars(parser.parse_args())
-    print('args:', args)
+# Replace jack/rose
+replaceMap = [
+    (re.compile(r"\b[Ss]he\b"), "Rose"),
+    (re.compile(r"\b[Hh]er\b"), "Rose"),
+    (re.compile(r"\b[Hh]e\b"), "Jack"),
+    (re.compile(r"\b[Hh]im\b"), "Jack"),
+]
+def randomReplaceJackRose(line, replace_proba = 0.8):
+    replace_count = 0
+    src = line
+    for pat, token in replaceMap:
+        search_result = pat.search(src)
+        if search_result is not None:
+            if random.random() <= replace_proba:
+                src = src[:search_result.start()] + token + src[search_result.end():]
+                replace_count += 1
+
+    if replace_count > 0:
+        print('Total replace jack/rose:', replace_count)
+    return src
+
+def readTmp(path):
+    res = []
+    with codecs.open(path, 'r', 'utf8') as fin:
+        for line in fin:
+            res.append(line)
+
+    return res
+
+def main(args):
     output_file = args['output_file'][0]
     min_story_lines = args['min_story_lines']
     max_story_lines = args['max_story_lines']
+    max_gen = args['max_generate_iteration']
 
     print('output file: {}'.format(output_file))
     input_prefix = 'She looks at the president,'
@@ -176,14 +210,34 @@ if __name__ == '__main__':
     sess = gpt2.start_tf_sess()
     gpt2.load_gpt2(sess)
     story = []
+    gen_count = 0
     while len(story) < min_story_lines:
-        for line in randomStory(sess, input_prefix, turn=3, length = 150):
+        gen_count += 1
+        if gen_count > max_gen:
+            break
+        rs = randomStory(sess, input_prefix, turn=1, length = 150)
+        rs = removeEmptyLines(rs)
+        for line in rs:
+            line = randomReplaceJackRose(line)
             if detector.isDuplicateBrute(line):
                 continue
             else:
                 detector.ingest(line)
                 story.append(line)
+    story = story[:max_story_lines]
     with open(output_file, 'w', encoding='utf8') as fout:
         for line in story:
             fout.write(line)
             fout.write('\n')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-output_file', nargs=1, help='output file')
+    parser.add_argument('-dream_json_path', nargs=1, help='path to current dream.json, which contains all the generated lines')
+    parser.add_argument('-previous_story_file', nargs=1, help='previous file to search for story prefix')
+    parser.add_argument('-min_story_lines', nargs=1, type=int, default=10, help='previous file to search for story prefix')
+    parser.add_argument('-max_story_lines', nargs=1, type=int, default=80, help='previous file to search for story prefix')
+    parser.add_argument('-max_generate_iteration', nargs=1, type=int, default=30, help='previous file to search for story prefix')
+    args = vars(parser.parse_args())
+    print('args:', args)
+    main(args)

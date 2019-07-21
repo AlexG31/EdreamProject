@@ -57,6 +57,7 @@ def getDuplicate(data):
       print('[{}]dup: '.format(line_index), en)
       #pdb.set_trace()
     detector.ingest(en)
+
   return dups
     
 if __name__ == '__main__':
