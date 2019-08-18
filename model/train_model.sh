@@ -2,7 +2,7 @@
 echo '========GPT-2 Model Training=========='
 modelHome="/home/alexg/model"
 cd $modelHome
-source cpu/bin/activate
+source /home/alexg/model/cpu/bin/activate
 
 echo "=====Let's Collect News!====="
 trainingFile="/home/alexg/model/training-news.txt"
