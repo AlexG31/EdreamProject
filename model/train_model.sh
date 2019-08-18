@@ -12,8 +12,9 @@ $spiderWorkFolder \
 $trainingFile
 
 # Train GPT-2 Model
+logpath="/home/alexg/model/training_logs/`date -I`_`date +%H%M`.txt"
 if mkdir ./gpt-2.lock; then
-    python3 helloworld.py
+    python3 helloworld.py $logpath
     rm -rf ./gpt-2.lock
 else
     echo 'gpt-2 is running'

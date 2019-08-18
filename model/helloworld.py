@@ -1,6 +1,13 @@
 import gpt_2_simple as gpt2
 import tensorflow as tf
 from tensorflow.core.protobuf import rewriter_config_pb2
+import sys, logging, time
+
+log_path = sys.argv[1]
+logging.basicConfig(filename=log_path, filemode='w', level = logging.INFO)
+logger = logging.getLogger('train_model')
+logger.info('start training at {}'.format(time.time()))
+
 model_name = "117M"
 training_data = "./training-news.txt"
 training_steps = 420 # 7 hours
