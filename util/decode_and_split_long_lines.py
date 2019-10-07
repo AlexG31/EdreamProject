@@ -3,15 +3,20 @@ import os, sys
 import json
 import argparse
 import pdb
+import re
 
 lengthThreshold = 100
 quotes = set([
   '"',
   u'“',
-  u'”'
+  u'”',
+  u'‘',
+  u'�'
 ])
+startMarks = re.compile(r'^[ ]*[\.\:\;\,]+')
 
-def removeQuotes(line):
+def removeMarks(line):
+  line = startMarks.sub('', line)
   result = ''
   for ch in line:
     if ch in quotes:
@@ -20,7 +25,6 @@ def removeQuotes(line):
   return result
 
 def splitComma(line):
-  line = removeQuotes(line)
   result = []
   n = len(line)
   phrase = ''
@@ -54,7 +58,7 @@ def splitComma(line):
   return result
 
 def split(line):
-  line = removeQuotes(line)
+  line = removeMarks(line)
   result = []
   n = len(line)
   phrase = ''
@@ -113,7 +117,9 @@ def getLongLines(data):
 def procImpl(lines, func):
   result = []
   for l in lines:
-    result.extend(func(l))
+    sub = func(l)
+    if sub:
+      result.extend(sub)
 
   return result
 
