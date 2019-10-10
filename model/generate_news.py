@@ -9,6 +9,7 @@ current_file_path = os.path.abspath(__file__)
 print('current file path:', current_file_path)
 sys.path.append(os.path.join(os.path.dirname(current_file_path), '..', 'util'))
 from checkSentenceDuplicate import SentenceDuplicateDetector
+from decode_shortplain_lines import manualStoryRules
 
 model_name = "117M"
 print('Using cached model 117M')
@@ -225,6 +226,7 @@ def main(args):
                 detector.ingest(line)
                 story.append(line)
     story = story[:max_story_lines]
+    story = manualStoryRules(story)
     with open(output_file, 'w', encoding='utf8') as fout:
         for line in story:
             fout.write(line)
