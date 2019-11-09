@@ -2,11 +2,12 @@
 import os, sys
 import json
 import argparse
+import random
 import pdb
 from decode_and_split_long_lines import proc
 
 pron = set([
-  'I',
+  'i',
   'we',
   'our',
   'you',
@@ -15,11 +16,27 @@ pron = set([
 says = set([
   'said',
   'say',
-  'says'
+  'says',
+  'add',
+  'adds',
+  'added',
+  'tell',
+  'tells',
+  'told',
+  'continue',
+  'continues',
+  'continued',
+  'argue',
+  'argues',
+  'argued',
+  'point out',
+  'pointed out',
+  'points out'
 ])
 
 def shornplain(line):
-  words = line.split(' ')
+  lower_line = line.lower()
+  words = lower_line.split(' ')
   hasPron = False
   hasSays = checkHasSays(line)
   for w in words:
@@ -32,24 +49,39 @@ def shornplain(line):
     return False
 
 def checkHasSays(line):
+  lower_line = line.lower()
   hasSays = False
   for s in says:
-    if -1 != line.find(s):
+    if -1 != lower_line.find(s):
       hasSays = True
   return hasSays
 
+def appendHeSays(line):
+  def generateTail():
+    names = ['Jack', 'Rose']
+    actions = ['said', 'added', 'continued', 'pointed out', 'cried', 'smiled', 'laughed']
+    return names[random.randint(0, len(names) - 1)] + ' ' + \
+      actions[random.randint(0, len(actions) - 1)]
+  def generate(proba = 0.1):
+    tails = ['Jack told Rose', 'Rose told Jack']
+    if random.random() < proba:
+      return tails[random.randint(0, 1)]
+    else:
+      return generateTail()
+
+  return line + ' ' + generate() + '.'
 
 def filterShortPlainLines(lines):
   result = []
   n = len(lines)
   for ind, line in enumerate(lines):
     if shornplain(line):
-      if ind + 1 >= n or checkHasSays(lines[ind + 1]) == False:
-        result.append(line)
+      line = appendHeSays(line)
+      result.append(line)
+    else:
+      result.append(line)
 
   return result
-
-
 
 def splitAll(lines):
   results = []

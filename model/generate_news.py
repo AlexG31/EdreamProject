@@ -14,6 +14,55 @@ from decode_shortplain_lines import manualStoryRules
 model_name = "117M"
 print('Using cached model 117M')
 
+fix_seeds = ["Jack and Rose ",
+"Jack and Rose ",
+"Jack told Rose, ",
+"Rose told Jack, ",
+"Looking at her ",
+"Looking at him ",
+"Sitting next to each other ",
+"Suddenly ",
+"All of a sudden ",
+"Then ",
+"Afterwards ",
+"After a while ",
+"The other day ",
+"In the end ",
+"Finally ",
+"Eventually ",
+"Soon ",
+"As soon as ",
+"Once again ",
+"Once upon a time ",
+"Later ",
+"Still ",
+"At this moment ",
+"For a moment ",
+"Meanwhile ",
+"At the same time ",
+"One day after ",
+"One day before ",
+"One day ",
+"Year after year ",
+"Day by day ",
+"As time passed by ",
+"Last summer ",
+"Last night ",
+"In spring ",
+"On the day ",
+"For many times ",
+"Every time ",
+"However ",
+"Moreover ",
+"Besides ",
+"At last ",
+"Last ",
+"On ",
+"In ",
+"At ",
+"Once ",
+"Before ",
+"After "]
 def judgeScriptLength(line, min_len = 5):
     return len(line.split(' ')) > min_len
 
@@ -109,13 +158,16 @@ def scriptFilter(line):
                 break
     return results
 
-def randomStory(sess, prefix, turn = 100, length = 1023):
+def randomStory(sess, prefix, previous_line_count, args, turn = 100, length = 1023):
     lineSet = set()
     cur = prefix
     story = []
     for ind in range(turn):
         print('story turn ', ind)
         print('prefix:', cur)
+        if (ind + previous_line_count) % args['fix_seed_period'] == 0:
+            manual_seed = fix_seeds[random.randint(0, len(fix_seeds) - 1)]
+            cur = manual_seed
         results = gpt2.generate(sess,
         length=length,
         nsamples=20,
@@ -166,6 +218,12 @@ def prepareDetector(dream_json_path):
         detector.ingest(en)
     return detector
 
+def countDreamJson(dream_json_path):
+    with open(dream_json_path, 'r', encoding='utf8') as fin:
+        data = json.load(fin)
+    print('total number of lines in dream json: {}'.format(len(data)))
+    return len(data)
+
 # Replace jack/rose
 replaceMap = [
     (re.compile(r"\b[Ss]he\b"), "Rose"),
@@ -207,6 +265,7 @@ def main(args):
         input_prefix = parseInputPrefix(args['previous_story_file'][0])
     print('Input prefix: ', input_prefix)
     
+    total_dream_lines = countDreamJson(args['dream_json_path'][0])
     detector = prepareDetector(args['dream_json_path'][0])
     sess = gpt2.start_tf_sess()
     gpt2.load_gpt2(sess)
@@ -216,7 +275,7 @@ def main(args):
         gen_count += 1
         if gen_count > max_gen:
             break
-        rs = randomStory(sess, input_prefix, turn=1, length = 150)
+        rs = randomStory(sess, input_prefix, total_dream_lines, args, turn=1, length = 150)
         rs = removeEmptyLines(rs)
         for line in rs:
             line = randomReplaceJackRose(line)
@@ -240,6 +299,7 @@ if __name__ == '__main__':
     parser.add_argument('-min_story_lines', nargs=1, type=int, default=10, help='previous file to search for story prefix')
     parser.add_argument('-max_story_lines', nargs=1, type=int, default=80, help='previous file to search for story prefix')
     parser.add_argument('-max_generate_iteration', nargs=1, type=int, default=30, help='previous file to search for story prefix')
+    parser.add_argument('-fix_seed_period', type=int, default=100, help='fix replace period of manual seed')
     args = vars(parser.parse_args())
     print('args:', args)
     main(args)
