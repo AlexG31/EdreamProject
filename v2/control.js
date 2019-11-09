@@ -7,15 +7,12 @@ rep = 0
 var dreamIndex = 0
 
 function readcaption() {
-    // console.log('timing event', rep);
-
     var button = document.getElementById('main-btn-div');
     button.style.display = 'none';
     document.getElementById('image-container').style.display = 'block';
     document.getElementById('storytext-container').style.display = 'block';
 
     ReadDream();
-
 }
 
 function PlaySpeech(speechpath) {
@@ -51,7 +48,9 @@ function ReadDream() {
   //window.setTimeout(ReadDream, 6000);
 
 }
-
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 function renderDream(en, zh, dream, voicePath) {
   // Image
 
@@ -62,10 +61,17 @@ function renderDream(en, zh, dream, voicePath) {
       ImageReposition(path, width, height);
     })
   } else {
-    defaultImage = 'images/image-not-found.jpg'
-    var width = 450
-    var height = 450
-    ImageReposition(defaultImage, width, height);
+    // random choose default image
+    default_image_count = 6
+    default_image_index = 1 + getRandomInt(default_image_count)
+    default_image_path = `images/color-${default_image_index}.jpg`
+    console.log(`using default image ${default_image_path}`)
+    //defaultImage = 'images/image-not-found.jpg'
+    //var width = 450
+    //var height = 450
+    //ImageReposition(default_image_path, width, height);
+    var img = document.getElementById('MainImg1');
+    img.src = default_image_path
   }
 
   document.getElementById('MainImg1').style.height = "310px";
