@@ -23,7 +23,7 @@ def findObsoleteModels(models, topk = 30):
     print('models to keep: {}'.format(model_id_list[:3]))
     files = []
     for obs in model_id_list[3:]:
-        files.extend(obs)
+        files.extend(models[obs])
     return files
 
 def deleteFiles(files):
