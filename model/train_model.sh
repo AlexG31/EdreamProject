@@ -3,7 +3,7 @@ echo '========GPT-2 Model Training=========='
 modelHome="/home/alexg/github/EdreamProject/model/"
 checkpointFolder="$modelHome/checkpoint/run1"
 cd $modelHome
-source "$modelHome/cpu/bin/activate"
+source /home/alexg/model/cpu/bin/activate
 
 echo "=====Let's Collect News!====="
 trainingFile="/home/alexg/model/training-news.txt"

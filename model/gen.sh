@@ -3,7 +3,7 @@ echo '======== GPT-2 Model =========='
 modelHome="/home/alexg/github/EdreamProject/model"
 dreamJsonPath="/home/alexg/EdreamProject/v2/target/lines/clean-lines.json"
 cd $modelHome
-source cpu/bin/activate
+source /home/alexg/model/cpu/bin/activate
 
 # GPT-2 Model Generation
 echo 'generate story ...'
