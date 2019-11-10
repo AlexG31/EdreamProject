@@ -17,12 +17,12 @@ def findModels(model_folder):
         models[model_id].append(p)
     return models
 
-def findObsoleteModels(models, topk = 30):
+def findObsoleteModels(models, topk = 3):
     model_id_list = list(models.keys())
     model_id_list.sort(reverse = True)
     print('models to keep: {}'.format(model_id_list[:3]))
     files = []
-    for obs in model_id_list[3:]:
+    for obs in model_id_list[topk:]:
         files.extend(models[obs])
     return files
 
