@@ -1,5 +1,6 @@
 #encoding:utf8
 import os, sys, re, pdb, glob
+import argparse
 
 pat = re.compile(r'model-([0-9]+)')
 def findModels(model_folder):
@@ -31,7 +32,13 @@ def deleteFiles(files):
         print('remove: {}'.format(p))
         os.remove(p)
 
+def cmd():
+    ps = argparse.ArgumentParser()
+    ps.add_argument('--checkpoint_folder', type=str, help='checkpoint folder that contains models')
+    return ps.parse_args()
+
 if __name__ == '__main__':
-    models = findModels('./')
+    args = cmd()
+    models = findModels(args.checkpoint_folder)
     obsolete = findObsoleteModels(models)
     deleteFiles(obsolete)

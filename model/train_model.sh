@@ -1,8 +1,9 @@
 #!/bin/bash -x
 echo '========GPT-2 Model Training=========='
-modelHome="/home/alexg/model"
+modelHome="/home/alexg/github/EdreamProject/model/"
+checkpointFolder="$modelHome/checkpoint/run1"
 cd $modelHome
-source /home/alexg/model/cpu/bin/activate
+source "$modelHome/cpu/bin/activate"
 
 echo "=====Let's Collect News!====="
 trainingFile="/home/alexg/model/training-news.txt"
@@ -16,8 +17,8 @@ logpath="/home/alexg/model/training_logs/`date -I`_`date +%H%M`.txt"
 if mkdir ./gpt-2.lock; then
     python3 helloworld.py $logpath
     rm -rf ./gpt-2.lock
+    python3 delete_obsolite_model.py --checkpoint_folder $checkpointFolder
 else
     echo 'gpt-2 is running'
     exit 1
 fi
-
