@@ -4,3 +4,10 @@
 googleAPI/keys
 **~
 *.pyc
+*.png
+*.tmp
+*.sh
+*.whl
+*.txt
+*.zip
+*.json

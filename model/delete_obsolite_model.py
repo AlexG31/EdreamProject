@@ -17,13 +17,21 @@ def findModels(model_folder):
         models[model_id].append(p)
     return models
 
-def findObsoleteModels(models, topk = 3):
+def findObsoleteModels(models, topk = 30):
     model_id_list = list(models.keys())
     model_id_list.sort(reverse = True)
     print('models to keep: {}'.format(model_id_list[:3]))
-    return model_id_list[3:]
+    files = []
+    for obs in model_id_list[3:]:
+        files.extend(obs)
+    return files
+
+def deleteFiles(files):
+    for p in files:
+        print('remove: {}'.format(p))
+        os.remove(p)
 
 if __name__ == '__main__':
     models = findModels('./')
     obsolete = findObsoleteModels(models)
-    print('obsolete: {}'.format(obsolete))
+    deleteFiles(obsolete)
