@@ -12,7 +12,7 @@ generateStoryFile="./generate/$dateFileName.txt"
 exportStoryFile="./generate/story.txt"
 
 if mkdir ./gpt-2.lock; then
-    python3 /github/EdreamProject/model/generate_news.py \
+    python3 $modelHome/generate_news.py \
     -output_file $generateStoryFile \
     -dream_json_path $dreamJsonPath \
     -previous_story_file $exportStoryFile
