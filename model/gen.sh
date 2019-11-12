@@ -1,7 +1,7 @@
 #!/bin/bash -x
 echo '======== GPT-2 Model =========='
 modelHome="/home/alexg/github/EdreamProject/model"
-dreamJsonPath="/home/alexg/EdreamProject/v2/target/lines/clean-lines.json"
+dreamJsonPath="/home/alexg/github/EdreamProject/v2/target/lines/clean-lines.json"
 cd $modelHome
 source /home/alexg/model/cpu/bin/activate
 
