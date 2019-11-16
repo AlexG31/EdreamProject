@@ -7,6 +7,7 @@ echo "current dir: `pwd`"
 modelHome="/home/alexg/github/EdreamProject/model"
 dateFileName="`date -I`_`date +%H%M`"
 rawStory="$modelHome/generate/story.txt"
+echo 'rawStory path: ', $rawStory
 #rawStory="/home/alexg/model/generate/raw-story-$dateFileName.txt"
 historyLines="/home/alexg/github/EdreamProject/v2/target/lines/clean-lines.json"
 rawLines="/home/alexg/github/EdreamProject/v2/target/lines/raw/raw-lines-$dateFileName.json"
