@@ -94,10 +94,12 @@ def splitLine(line):
         '?',
         ';'
         ])
+    must_have_space_tail_stops = ['.', ',']
     results = []
     cur = ''
     prev_quote = None
-    for c in line:
+    n = len(line)
+    for char_ind, c in enumerate(line):
         ch = c
         if prev_quote is not None:
             if c == quotes[prev_quote][1] and judgeScriptLength(cur.strip(' ')):
@@ -109,9 +111,16 @@ def splitLine(line):
         else:
             if c in stops and judgeScriptLength(cur.strip(' ')):
                 cur += c 
-                results.append(cur.strip(' '))
-                cur = ''
-                ch = ''
+                if c in must_have_space_tail_stops:
+                    if char_ind + 1 < n and line[char_ind + 1] == ' ':
+                        results.append(cur.strip(' '))
+                        cur = ''
+                        ch = ''
+                else:
+                    results.append(cur.strip(' '))
+                    cur = ''
+                    ch = ''
+
             
         cur += ch
         for ind in range(len(quotes)):
