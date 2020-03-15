@@ -163,17 +163,41 @@ function ClipSize(height, width, max_height) {
 
 function ImageReposition(imagePath, width, height) {
 
-    var cimage = preloadImageObject[(dreamIndex + 1) % 2];
-    if (cimage == null) {
-      document.getElementById('MainImg1').src = imagePath;
-      console.log('preload image object is null!')
-    } else {
-      document.getElementById('MainImg1').remove();
-      document.getElementById('image-container').appendChild(cimage);
-      console.log('current image url:', imagePath);
-      console.log('using preload image url:', cimage.src);
-    }
+  var cimage = preloadImageObject[(dreamIndex + 1) % 2];
+  if (cimage == null) {
+    document.getElementById('MainImg1').src = imagePath;
+    console.log('preload image object is null!')
+  } else {
+    document.getElementById('MainImg1').remove();
+    document.getElementById('image-container').appendChild(cimage);
+    console.log('current image url:', imagePath);
+    console.log('using preload image url:', cimage.src);
+  }
+
+  var img = document.getElementById('MainImg1');
+  img.visibility = 'hidden';
+
+  // Clip height
+  new_size = ClipSize(height, width, 500);
+  height = new_size.height;
+  width = new_size.width;
+  //height = 150;
+  //width = 135;
+  console.log('Width, height,', width, height);
+
+  var WindowWidth = document.getElementById('image-container').clientWidth;
+  console.log('WindowWidth:', WindowWidth);
+
+  mleft = (WindowWidth - width) / 2;
+  mtop = (500 - height) / 2;
+
+  img.style.marginLeft = mleft.toString() + "px";
+  img.style.marginTop = mtop.toString() + "px";
+  img.style.height = height.toString() + "px";
+
+  img.visibility = 'visible';
 }
+
 
 /*
 * Convert image url to local image location
