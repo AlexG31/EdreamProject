@@ -43,12 +43,13 @@ function ReadDream() {
     // Preload Image
     nextIndex = dreamIndex
     
+    var voicePath = "voices/" + currentLine[2] + ".mp3"
+    console.log('voice path:', voicePath)
     var fileExists = UrlExists("image-json/" + currentLine[2] + ".json");
+    var voiceExists = UrlExists(voicePath);
     preloadImage(lineJson, nextIndex)
-    if (fileExists) {
+    if (fileExists && voiceExists) {
       var res = d3.json("image-json/" + currentLine[2] + ".json")
-      var voicePath = "voices/" + currentLine[2] + ".mp3"
-      console.log(voicePath)
       var r2 = res.then(function(dream){
         renderDream(currentLine[0], currentLine[1], dream, voicePath)
       })
@@ -99,14 +100,19 @@ function UrlExists(url)
 }
 
 function renderDream(en, zh, dream, voicePath) {
+  // Image
   if (dream != null) {
-    var height = dream.value[0].thumbnail.height;
-    var width = dream.value[0].thumbnail.width;
-    var p1 = dream.value[0].thumbnailUrl
-    console.log('Loading current image:', p1)
-    ImageReposition(p1, width, height);
-
+      var height = dream.value[0].thumbnail.height;
+      var width = dream.value[0].thumbnail.width;
+      var p1 = dream.value[0].thumbnailUrl
+      console.log('Loading current image:', p1)
+      ImageReposition(p1, width, height);
   } else {
+    // defaultImage = 'images/image-not-found.jpg'
+    // var width = 450
+    // var height = 450
+    // ImageReposition(defaultImage, width, height);
+
     // random choose default image
     default_image_count = 6
     default_image_index = 1 + getRandomInt(default_image_count)
@@ -164,62 +170,18 @@ function ClipSize(height, width, max_height) {
 
 function ImageReposition(imagePath, width, height) {
 
-  var cimage = preloadImageObject[(dreamIndex + 1) % 2];
-  if (cimage == null) {
-    document.getElementById('MainImg1').src = imagePath;
-    console.log('preload image object is null!')
-  } else {
-    document.getElementById('MainImg1').remove();
-    document.getElementById('image-container').appendChild(cimage);
-    console.log('current image url:', imagePath);
-    console.log('using preload image url:', cimage.src);
-  }
-
-  var img = document.getElementById('MainImg1');
-  img.visibility = 'hidden';
-
-  // Clip height
-  new_size = ClipSize(height, width, 500);
-  height = new_size.height;
-  width = new_size.width;
-  //height = 150;
-  //width = 135;
-  console.log('Width, height,', width, height);
-
-  var WindowWidth = document.getElementById('image-container').clientWidth;
-  console.log('WindowWidth:', WindowWidth);
-
-  mleft = (WindowWidth - width) / 2;
-  mtop = (500 - height) / 2;
-
-  img.style.marginLeft = mleft.toString() + "px";
-  img.style.marginTop = mtop.toString() + "px";
-  img.style.height = height.toString() + "px";
-
-  img.visibility = 'visible';
-}
-
-
-/*
-* Convert image url to local image location
-*/
-function convertUrl2LocalPath(imageinfo, action) {
-  var url = imageinfo.contentUrl
-  var thumbnailUrl = imageinfo.thumbnailUrl
-  var ext = imageinfo.encodingFormat
-
-  var imgHash = d3.json("images/image-hash.json")
-  imgHash.then(function(hashJson){
-      hashJson.forEach(function(v){
-        if (v.url == url) {
-          imgPath = 'images/' + v.hash + '.' + ext
-          console.log('local image: ' + imgPath)
-          action(imgPath)
-        }
-      })
+    var cimage = preloadImageObject[(dreamIndex + 1) % 2];
+    if (cimage == null) {
+      document.getElementById('MainImg1').src = imagePath;
+      console.log('preload image object is null!')
+    } else {
+      document.getElementById('MainImg1').remove();
+      document.getElementById('image-container').appendChild(cimage);
+      console.log('current image url:', imagePath);
+      console.log('using preload image url:', cimage.src);
     }
-  )
 }
+
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
