@@ -3,16 +3,21 @@ function generateText(sentenceCount) {
     for (var i = 0; i < sentenceCount; i++)
         document.write(bodyText[Math.floor(Math.random() * 7)] + " ")
 }
-rep = 0
-var dreamIndex = 0
+rep = 0;
+var dreamIndex = Math.floor(Math.random() * 10000);
+var preloadImageObject = Array(null, null);
+var playGap = 1000;
 
 function readcaption() {
-    var button = document.getElementById('main-btn-div');
+    // console.log('timing event', rep);
+
+    var button = document.getElementById('main-btn');
     button.style.display = 'none';
     document.getElementById('image-container').style.display = 'block';
     document.getElementById('storytext-container').style.display = 'block';
 
     ReadDream();
+
 }
 
 function PlaySpeech(speechpath) {
@@ -26,34 +31,74 @@ function PlaySpeech(speechpath) {
 function ReadDream() {
 
   // lines
-  var lines = d3.json("lines/clean-lines.json",
-  function(err, c1){
-  })
+  var lines = d3.json("lines/clean-lines.json")
 
   var r1 = lines.then(function(lineJson){
-    var currentLine = lineJson[dreamIndex]
-    console.log(currentLine)
     n = lineJson.length
-    console.log(n)
+    console.log('total lines in story:', n)
+    dreamIndex = dreamIndex % n
+    var currentLine = lineJson[dreamIndex]
     dreamIndex = (dreamIndex + 1) % n
 
-    var res = d3.json("image-json/" + currentLine[2] + ".json")
-    //var res = d3.json("image-json/" + '671159b980caeb208358427f68c37e41e9dc17f2a69d09f335bf20147e637df4' + ".json")
-    var voicePath = "voices/" + currentLine[2] + ".mp3"
-    var r2 = res.then(function(dream){
-      renderDream(currentLine[0], currentLine[1], dream, voicePath)
-    })
+    // Preload Image
+    nextIndex = dreamIndex
+    
+    var fileExists = UrlExists("image-json/" + currentLine[2] + ".json");
+    preloadImage(lineJson, nextIndex)
+    if (fileExists) {
+      var res = d3.json("image-json/" + currentLine[2] + ".json")
+      var voicePath = "voices/" + currentLine[2] + ".mp3"
+      console.log(voicePath)
+      var r2 = res.then(function(dream){
+        renderDream(currentLine[0], currentLine[1], dream, voicePath)
+      })
+    } else {
+      //renderDream(currentLine[0], currentLine[1], null, voicePath)
+      window.setTimeout(ReadDream, playGap);
+    }
+
   })
 
   //window.setTimeout(ReadDream, 6000);
 
 }
-function getRandomInt(max) {
-  return Math.floor(Math.random() * Math.floor(max));
-}
-function renderDream(en, zh, dream, voicePath) {
-  // Image
 
+function preloadImage(lineJson, nextIndex) {
+  var currentLine = lineJson[nextIndex]
+
+  var fileExists = UrlExists("image-json/" + currentLine[2] + ".json");
+  console.log('file? ->', fileExists);
+  if (fileExists) {
+    var res = d3.json("image-json/" + currentLine[2] + ".json")
+    var r2 = res.then(function(dream){
+      var p1 = "images/image-not-found.jpg"
+      if (dream != null) {
+        p1 = dream.value[0].thumbnailUrl;
+      }
+
+      console.log('preload image url: ', p1);
+      var pd = preloadImageObject[nextIndex % 2];
+      pd = new Image();
+      pd.src = p1;
+      pd.id = "MainImg1"
+
+    })
+  } else {
+    preloadImageObject[nextIndex % 2] = new Image();
+    preloadImageObject[nextIndex % 2].src = "images/image-not-found.jpg";
+    preloadImageObject[nextIndex % 2].id = "MainImg1";
+  }
+}
+
+function UrlExists(url)
+{
+    var http = new XMLHttpRequest();
+    http.open('HEAD', url, false);
+    http.send();
+    return http.status!=404;
+}
+
+function renderDream(en, zh, dream, voicePath) {
   if (dream != null) {
     convertUrl2LocalPath(dream.value[0], function(path) {
       var height = dream.value[0].thumbnail.height;
@@ -87,7 +132,7 @@ function renderDream(en, zh, dream, voicePath) {
   //window.setTimeout(readcaption, 6000);
   speech.onended = function () {
       //console.log('Audio ended.')
-      window.setTimeout(ReadDream, 100);
+      window.setTimeout(ReadDream, playGap);
   }
 }
 
@@ -118,30 +163,16 @@ function ClipSize(height, width, max_height) {
 
 function ImageReposition(imagePath, width, height) {
 
-    var img = document.getElementById('MainImg1');
-    img.src = imagePath
-    //img.src = imageinfo.thumbnailUrl;
-    //img.src = 'https://tse2.mm.bing.net/th?id=OIP.WgaQqMxxicDuNPbPKzfakgAAAA&pid=Api';
-    // Image size
-
-    // Clip height
-    new_size = ClipSize(height, width, 500);
-    height = new_size.height;
-    width = new_size.width;
-    //height = 150;
-    //width = 135;
-    console.log('Width, height,', width, height);
-
-    var WindowWidth = document.getElementById('image-container').clientWidth;
-    console.log('WindowWidth:', WindowWidth);
-
-    mleft = (WindowWidth - width) / 2;
-    mtop = (500 - height) / 2;
-
-    console.log(img);
-    img.style.marginLeft = mleft.toString() + "px";
-    img.style.marginTop = mtop.toString() + "px";
-    img.style.height = height.toString() + "px";
+    var cimage = preloadImageObject[(dreamIndex + 1) % 2];
+    if (cimage == null) {
+      document.getElementById('MainImg1').src = imagePath;
+      console.log('preload image object is null!')
+    } else {
+      document.getElementById('MainImg1').remove();
+      document.getElementById('image-container').appendChild(cimage);
+      console.log('current image url:', imagePath);
+      console.log('using preload image url:', cimage.src);
+    }
 }
 
 /*
@@ -163,5 +194,7 @@ function convertUrl2LocalPath(imageinfo, action) {
       })
     }
   )
-
+}
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
