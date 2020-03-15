@@ -1,5 +1,6 @@
 #!/bin/bash -x
-E_DREAM_ROOT='/media/alexg/vol1/github/EdreamProject'
+#E_DREAM_ROOT='/media/alexg/vol1/github/EdreamProject'
+E_DREAM_ROOT='/home/alexg/github/EdreamProject'
 cd $E_DREAM_ROOT
 cd news-crawler
 dateFileName="`date -I`"

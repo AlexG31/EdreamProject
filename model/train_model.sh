@@ -7,7 +7,8 @@ source /home/alexg/model/cpu/bin/activate
 
 echo "=====Let's Collect News!====="
 trainingFile="/home/alexg/model/training-news.txt"
-spiderWorkFolder="/home/alexg/spider/work/"
+spiderWorkFolder="/home/alexg/github/EdreamProject/news-crawler/work/"
+#spiderWorkFolder="/home/alexg/spider/work/"
 python3 /home/alexg/github/EdreamProject/util/merge_data_util.py \
 $spiderWorkFolder \
 $trainingFile
