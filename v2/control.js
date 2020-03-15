@@ -100,11 +100,12 @@ function UrlExists(url)
 
 function renderDream(en, zh, dream, voicePath) {
   if (dream != null) {
-    convertUrl2LocalPath(dream.value[0], function(path) {
-      var height = dream.value[0].thumbnail.height;
-      var width = dream.value[0].thumbnail.width;
-      ImageReposition(path, width, height);
-    })
+    var height = dream.value[0].thumbnail.height;
+    var width = dream.value[0].thumbnail.width;
+    var p1 = dream.value[0].thumbnailUrl
+    console.log('Loading current image:', p1)
+    ImageReposition(p1, width, height);
+
   } else {
     // random choose default image
     default_image_count = 6
