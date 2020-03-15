@@ -85,7 +85,7 @@ def read_news(in_path):
     fin.readline()
     for line in fin:
       line = space_pattern.sub(' ', line).strip(' \r\n')
-      if len(line) == 0 or len(line.split(' ')) < 10:
+      if len(line.split(' ')) <= 0:
         continue
       contents.append(line)
 
@@ -93,12 +93,6 @@ def read_news(in_path):
   n = len(contents)
   if n > 0 and copyright_pattern.match(contents[n - 1].lower()):
      n -= 1
-  elif n > 0:
-    c = contents[-1]
-    c = space_pattern.sub('', c)
-    if len(c) > 0:
-      clog.info(in_path)
-      clog.info(contents[-1])
   if n < 3:
     n = 0
 

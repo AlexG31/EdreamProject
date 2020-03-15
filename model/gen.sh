@@ -9,11 +9,13 @@ source /home/alexg/model/cpu/bin/activate
 echo 'generate story ...'
 dateFileName="`date -I`_`date +%H`"
 generateStoryFile="./generate/$dateFileName.txt"
+rawStoryFile="./generate/raw-$dateFileName.txt"
 exportStoryFile="./generate/story.txt"
 
 if mkdir ./gpt-2.lock; then
     python3 $modelHome/generate_news.py \
     -output_file $generateStoryFile \
+    -raw_output_file $rawStoryFile \
     -dream_json_path $dreamJsonPath \
     -previous_story_file $exportStoryFile
 

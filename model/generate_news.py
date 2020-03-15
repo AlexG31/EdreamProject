@@ -158,7 +158,7 @@ def scriptFilter(line):
                 break
     return results
 
-def randomStory(sess, prefix, previous_line_count, args, turn = 100, length = 1023):
+def randomStory(sess, prefix, previous_line_count, args, raw_story, turn = 100, length = 1023):
     lineSet = set()
     cur = prefix
     story = []
@@ -177,6 +177,7 @@ def randomStory(sess, prefix, previous_line_count, args, turn = 100, length = 10
 
         next_line = None
         for line in results:
+            raw_story.append(line)
             if line not in lineSet and judgeEnding(line) and judgeScriptLength(line):
                 next_line = line
                 lineSet.add(line)
@@ -255,6 +256,7 @@ def readTmp(path):
 
 def main(args):
     output_file = args['output_file'][0]
+    raw_output_file = args['raw_output_file'][0]
     min_story_lines = args['min_story_lines']
     max_story_lines = args['max_story_lines']
     max_gen = args['max_generate_iteration']
@@ -270,12 +272,13 @@ def main(args):
     sess = gpt2.start_tf_sess()
     gpt2.load_gpt2(sess)
     story = []
+    raw_story = []
     gen_count = 0
     while len(story) < min_story_lines:
         gen_count += 1
         if gen_count > max_gen:
             break
-        rs = randomStory(sess, input_prefix, total_dream_lines, args, turn=1, length = 150)
+        rs = randomStory(sess, input_prefix, total_dream_lines, args, raw_story, turn=1, length = 150)
         rs = removeEmptyLines(rs)
         for line in rs:
             line = randomReplaceJackRose(line)
@@ -290,10 +293,15 @@ def main(args):
         for line in story:
             fout.write(line)
             fout.write('\n')
+    with open(raw_output_file, 'w', encoding='utf8') as fout:
+        for line in raw_story:
+            fout.write(line)
+            fout.write('\n')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-output_file', nargs=1, help='output file')
+    parser.add_argument('-raw_output_file', nargs=1, help='raw model output')
     parser.add_argument('-dream_json_path', nargs=1, help='path to current dream.json, which contains all the generated lines')
     parser.add_argument('-previous_story_file', nargs=1, help='previous file to search for story prefix')
     parser.add_argument('-min_story_lines', nargs=1, type=int, default=10, help='previous file to search for story prefix')
