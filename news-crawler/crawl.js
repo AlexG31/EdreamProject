@@ -12,7 +12,7 @@ exports.hello = function (name) {
 exports.crawl = async function (targetUrl, saveFolder) {
   if (!fs.existsSync(saveFolder)) throw new Exception('save folder does not exist: ' + saveFolder);
 
-  const browser = await puppeteer.launch({args: ['--no-sandbox']});
+  const browser = await puppeteer.launch({args: ['--no-sandbox'], defaultViewport: null});
   console.log('User agent:');
   var userAgentValue = await browser.userAgent();
   console.log(userAgentValue);

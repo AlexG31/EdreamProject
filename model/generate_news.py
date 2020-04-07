@@ -63,7 +63,7 @@ fix_seeds = ["Jack and Rose ",
 "Once ",
 "Before ",
 "After "]
-def judgeScriptLength(line, min_len = 5):
+def judgeScriptLength(line, min_len = 2):
     return len(line.split(' ')) > min_len
 
 endingPattern = re.compile(r'[^a-z0-9A-Z]$')
@@ -79,7 +79,7 @@ def removeEmptyLines(lines):
         if len(l) > 0 and judgeEnding(l) and judgeScriptLength(l):
             res.append(l)
     return res
-
+'''
 def splitLine(line):
     quotes = [
         u'""',
@@ -127,6 +127,50 @@ def splitLine(line):
             if quotes[ind][0] == ch:
                 prev_quote = ind
                 break
+    if judgeScriptLength(cur.strip(' ')):
+        results.append(cur.strip(' '))
+    return results
+'''
+    
+def splitLine(line):
+    quotes = [
+        u'""',
+        u'“”'
+    ]
+    stops = set([
+        '. ',
+        ', ',
+        '，',
+        '。',
+        '! ',
+        '? ',
+        '; '
+        ])
+    must_have_space_tail_stops = ['.', ',']
+    results = []
+    cur = ''
+    n = len(line)
+    for char_ind, c in enumerate(line):
+        ch = c
+        
+        if char_ind < n-1:
+                if c+line[char_ind+1] in stops and judgeScriptLength(cur.strip(' ')):
+                    cur += c
+                    results.append(cur.strip(' '))
+                    cur = ''
+                    ch = ''
+            
+        else:
+                cur += c
+                results.append(cur.strip(' '))
+                cur = ''
+                ch = ''
+            
+        cur += ch
+        for ind in range(len(quotes)):
+                if ch in quotes[ind]:
+                   cur=cur.replace(ch,'')
+         
     if judgeScriptLength(cur.strip(' ')):
         results.append(cur.strip(' '))
     return results
@@ -180,7 +224,7 @@ def randomStory(sess, prefix, previous_line_count, args, raw_story, turn = 100, 
         results = gpt2.generate(sess,
         length=length,
         nsamples=20,
-        temperature=0.7,
+        temperature=0.8,
         prefix=cur,
         return_as_list=True)
 
@@ -241,7 +285,7 @@ replaceMap = [
     (re.compile(r"\b[Hh]e\b"), "Jack"),
     (re.compile(r"\b[Hh]im\b"), "Jack"),
 ]
-def randomReplaceJackRose(line, replace_proba = 0.8):
+def randomReplaceJackRose(line, replace_proba = 0.95):
     replace_count = 0
     src = line
     for pat, token in replaceMap:
@@ -313,10 +357,10 @@ if __name__ == '__main__':
     parser.add_argument('-raw_output_file', nargs=1, help='raw model output')
     parser.add_argument('-dream_json_path', nargs=1, help='path to current dream.json, which contains all the generated lines')
     parser.add_argument('-previous_story_file', nargs=1, help='previous file to search for story prefix')
-    parser.add_argument('-min_story_lines', nargs=1, type=int, default=10, help='previous file to search for story prefix')
+    parser.add_argument('-min_story_lines', nargs=1, type=int, default=2, help='previous file to search for story prefix')
     parser.add_argument('-max_story_lines', nargs=1, type=int, default=80, help='previous file to search for story prefix')
     parser.add_argument('-max_generate_iteration', nargs=1, type=int, default=30, help='previous file to search for story prefix')
-    parser.add_argument('-fix_seed_period', type=int, default=100, help='fix replace period of manual seed')
+    parser.add_argument('-fix_seed_period', type=int, default=10, help='fix replace period of manual seed')
     args = vars(parser.parse_args())
     print('args:', args)
     main(args)

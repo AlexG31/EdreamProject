@@ -85,7 +85,7 @@ def read_news(in_path):
     fin.readline()
     for line in fin:
       line = space_pattern.sub(' ', line).strip(' \r\n')
-      if len(line.split(' ')) <= 0 and len(line) > 100:
+      if len(line.split(' ')) <= 0 and len(line) > 50:
         continue
       contents.append(line)
 
