@@ -296,8 +296,8 @@ def main(args):
             else:
                 detector.ingest(line)
                 story.append(line)
+        story = manualStoryRules(story)
     story = story[:max_story_lines]
-    story = manualStoryRules(story)
     with open(output_file, 'w', encoding='utf8') as fout:
         for line in story:
             fout.write(line)

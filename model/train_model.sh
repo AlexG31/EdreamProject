@@ -17,7 +17,7 @@ $trainingFile
 logpath="/home/alexg/model/training_logs/`date -I`_`date +%H%M`.txt"
 #if mkdir ./gpt-2.lock; then
     python3 helloworld.py $logpath
-    rm -rf ./gpt-2.lock
+    # rm -rf ./gpt-2.lock
     python3 delete_obsolite_model.py --checkpoint_folder $checkpointFolder
 #else
 #     echo 'gpt-2 is running'

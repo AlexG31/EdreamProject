@@ -25,7 +25,7 @@ exportStoryFile="./generate/story.txt"
     "/home/alexg/model/logs/bing-api-$dateFileName.log" && \
     sh /home/alexg/github/EdreamProject/util/bin/send_json.sh 
 
-    rm -rf ./gpt-2.lock
+    # rm -rf ./gpt-2.lock
 #else
 #    echo 'gpt-2 is running'
 #    exit 1
